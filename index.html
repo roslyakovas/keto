@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Keto Planner — Рецепты</title>
+<style>
+  :root{
+    --bg:#f2f2f7;
+    --card:#ffffff;
+    --text:#111111;
+    --sub:#8e8e93;
+    --blue:#007aff;
+    --green:#34c759;
+    --orange:#ff9500;
+    --red:#ff3b30;
+    --line:#e5e5ea;
+    --shadow:0 8px 24px rgba(0,0,0,.06);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text)}
+  body{padding-bottom:86px}
+  .app{max-width:920px;margin:0 auto;padding:16px}
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:linear-gradient(to bottom, rgba(242,242,247,.98), rgba(242,242,247,.92));
+    backdrop-filter: blur(10px);
+    padding:12px 0 14px;
+    margin-bottom:10px;
+  }
+  .title{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .subtitle{font-size:13px;color:var(--sub);margin-top:4px}
+  .grid{display:grid;gap:12px}
+  .card{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px;
+  }
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .muted{color:var(--sub)}
+  .big{font-size:28px;font-weight:700;letter-spacing:-.03em}
+  .seg{display:flex;gap:8px;background:#e9e9ef;padding:6px;border-radius:14px}
+  .seg button{
+    border:none;background:transparent;padding:10px 14px;border-radius:10px;color:var(--sub);font-size:14px;font-weight:600;cursor:pointer
+  }
+  .seg button.active{background:#fff;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  .btn{
+    border:none;border-radius:14px;padding:14px 16px;font-size:16px;font-weight:600;cursor:pointer
+  }
+  .btn.primary{background:var(--blue);color:#fff}
+  .btn.secondary{background:#fff;color:var(--blue);border:1px solid var(--line)}
+  .btn.ghost{background:#f6f6fa;color:var(--text);border:1px solid var(--line)}
+  .btn.danger{background:var(--red);color:#fff}
+  .btn.small{padding:10px 12px;font-size:14px;border-radius:12px}
+  .input{
+    width:100%;height:46px;border-radius:14px;border:1px solid var(--line);padding:0 14px;font-size:16px;background:#fff;outline:none
+  }
+  .textarea{
+    width:100%;min-height:96px;border-radius:14px;border:1px solid var(--line);padding:12px 14px;font-size:16px;background:#fff;outline:none;resize:vertical
+  }
+  .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .stat{
+    background:#f8f8fc;border:1px solid #ededf4;border-radius:16px;padding:12px
+  }
+  .stat .v{font-size:18px;font-weight:700}
+  .stat .l{font-size:12px;color:var(--sub);margin-top:2px}
+  .meal-list,.recipe-list{display:grid;gap:10px}
+  .meal-item,.recipe-item{
+    background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 1px 0 rgba(0,0,0,.02)
+  }
+  .meal-item{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .meal-name{font-size:16px;font-weight:700}
+  .meal-meta,.recipe-meta{font-size:13px;color:var(--sub);margin-top:4px}
+  .chip{
+    display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#f2f2f7;color:var(--sub)
+  }
+  .chip.good{background:rgba(52,199,89,.12);color:var(--green)}
+  .chip.warn{background:rgba(255,149,0,.12);color:var(--orange)}
+  .chip.bad{background:rgba(255,59,48,.12);color:var(--red)}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap}
+  .section-title{font-size:18px;font-weight:700;margin:0 0 10px}
+  .search-wrap{position:relative}
+  .search-wrap input{padding-right:42px}
+  .search-clear{
+    position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    width:30px;height:30px;border:none;border-radius:999px;background:#e9e9ef;color:var(--sub);cursor:pointer
+  }
+  .recipe-card{
+    background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:12px
+  }
+  .recipe-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .recipe-name{font-size:18px;font-weight:700;line-height:1.2}
+  .recipe-tag{font-size:12px;color:var(--sub);background:#f3f3f8;padding:6px 10px;border-radius:999px;white-space:nowrap}
+  .recipe-kbzu{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .kbzu{
+    background:#f8f8fc;border:1px solid #ededf4;border-radius:14px;padding:10px;text-align:center
+  }
+  .kbzu .val{font-size:16px;font-weight:700}
+  .kbzu .lbl{font-size:11px;color:var(--sub);margin-top:2px}
+  .recipe-actions,.meal-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .ingredients{display:grid;gap:8px}
+  .ingredient{
+    display:flex;justify-content:space-between;gap:12px;align-items:center;
+    background:#f8f8fc;border:1px solid #ededf4;border-radius:14px;padding:10px 12px
+  }
+  .ingredient .left{min-width:0}
+  .ingredient .name{font-size:14px;font-weight:700}
+  .ingredient .info{font-size:12px;color:var(--sub);margin-top:3px}
+  .modal{
+    position:fixed;inset:0;background:rgba(17,17,17,.42);display:none;align-items:flex-end;z-index:50
+  }
+  .modal.show{display:flex}
+  .sheet{
+    width:100%;background:#fff;border-radius:24px 24px 0 0;max-height:92vh;overflow:auto;
+    padding:14px 16px 18px
+  }
+  .grab{width:46px;height:5px;border-radius:999px;background:#d1d1d6;margin:4px auto 14px}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+  .sheet-title{font-size:20px;font-weight:700}
+  .field{display:grid;gap:6px;margin-bottom:12px}
+  .label{font-size:13px;color:var(--sub);font-weight:600}
+  .bottom-nav{
+    position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);
+    border-top:1px solid rgba(0,0,0,.06);padding:8px 10px;display:flex;gap:8px;z-index:30
+  }
+  .bottom-nav button{
+    flex:1;border:none;background:transparent;border-radius:14px;padding:10px 8px;font-size:12px;color:var(--sub);cursor:pointer
+  }
+  .bottom-nav button.active{background:#eef5ff;color:var(--blue);font-weight:700}
+  .hide{display:none !important}
+  .empty{
+    text-align:center;padding:24px 14px;color:var(--sub);background:#fff;border:1px dashed #d8d8de;border-radius:18px
+  }
+  .mini{font-size:12px;color:var(--sub)}
+  .divider{height:1px;background:var(--line);margin:12px 0}
+  .product-select{
+    display:grid;gap:10px;max-height:42vh;overflow:auto;padding-right:2px
+  }
+  .product-option{
+    background:#f8f8fc;border:1px solid #ededf4;border-radius:14px;padding:12px;cursor:pointer
+  }
+  .product-option b{display:block;margin-bottom:2px}
+  .product-option .meta{font-size:12px;color:var(--sub)}
+  .kbd-line{display:flex;gap:8px;flex-wrap:wrap}
+  .kbd{font-size:12px;background:#f2f2f7;border:1px solid #e4e4ea;border-radius:999px;padding:6px 10px;color:#555}
+  .recipe-products{display:flex;flex-wrap:wrap;gap:8px}
+  .recipe-products .kbd{background:#fff}
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%);
+    bottom:92px;background:#111;color:#fff;padding:12px 14px;border-radius:14px;font-size:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:min(92vw,420px)
+  }
+  .toast.show{opacity:1}
+  @media (max-width:640px){
+    .app{padding:14px}
+    .statgrid{grid-template-columns:repeat(2,1fr)}
+    .recipe-kbzu{grid-template-columns:repeat(2,1fr)}
+    .meal-item{align-items:flex-start}
+  }
+
+/* backdrop */
+.confirm-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.25);
+  backdrop-filter: blur(4px);
+}
+
+/* sheet */
+.confirm-sheet{
+  transform: translateY(100%);
+  transition: transform .35s cubic-bezier(.22,.61,.36,1);
+  border-radius:20px 20px 0 0;
+}
+
+.modal.show .confirm-sheet{
+  transform: translateY(0);
+}
+
+/* content */
+.confirm-content{
+  text-align:center;
+  padding:10px 12px 18px;
+}
+
+.confirm-title{
+  font-size:17px;
+  font-weight:600;
+}
+
+.confirm-text{
+  font-size:13px;
+  color:var(--sub);
+  margin-top:6px;
+}
+
+/* actions */
+.confirm-actions{
+  display:grid;
+  gap:10px;
+}
+
+.confirm-btn{
+  height:50px;
+  border-radius:14px;
+  border:none;
+  font-size:17px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* iOS стили */
+.confirm-btn.danger{
+  background:#fff;
+  color:#ff3b30;
+}
+
+.confirm-btn.cancel{
+  background:#fff;
+  font-weight:700;
+}
+
+.recipe-name {
+  cursor: pointer;
+}
+
+.paywall-card {
+  background: linear-gradient(135deg, #111, #1c1c1e);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 12px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.paywall-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.paywall-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.paywall-text {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+.paywall-benefits {
+  font-size: 13px;
+  text-align: left;
+  opacity: 0.9;
+  margin: 0 auto 16px;
+  max-width: 220px;
+}
+
+.paywall-btn {
+  background: #0a84ff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.paywall-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+</style>
+</head>
+<body>
+
+<div class="modal" id="confirmModal">
+  <div class="confirm-backdrop" onclick="closeConfirm()"></div>
+
+  <div class="sheet confirm-sheet" id="confirmSheet">
+    <div class="grab" id="confirmGrab"></div>
+
+    <div class="confirm-content">
+      <div id="confirmTitle" class="confirm-title"></div>
+      <div id="confirmText" class="confirm-text"></div>
+    </div>
+
+    <div class="confirm-actions">
+      <button class="confirm-btn danger" id="confirmYes">Удалить</button>
+      <button class="confirm-btn cancel" onclick="closeConfirm()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="topbar">
+    <div class="title" id="pageTitle">Сегодня</div>
+    <div class="subtitle" id="pageSubtitle">Собирай рацион, сохраняй удачные приёмы как рецепты и повторяй их в один тап.</div>
+  </div>
+
+  <div id="view"></div>
+	</div>
+
+<div class="bottom-nav">
+  <button id="navDay" class="active" onclick="setScreen('day')">День</button>
+  <button id="navMeals" onclick="setScreen('meals')">Приёмы</button>
+  <button id="navRecipes" onclick="setScreen('recipes')">Рецепты</button>
+  <button id="navSettings" onclick="openSettings()">Настройки</button>
+</div>
+
+<div class="modal" id="recipeModal">
+  <div class="sheet">
+    <div class="grab"></div>
+    <div class="sheet-head">
+      <div class="sheet-title" id="recipeModalTitle">Новый рецепт</div>
+      <button class="btn ghost small" onclick="closeRecipeModal()">Закрыть</button>
+    </div>
+
+    <div class="field">
+      <div class="label">Название</div>
+      <input id="recipeName" class="input" placeholder="Например: Завтрак — мой кето-старт" />
+    </div>
+
+    <div class="field">
+      <div class="label">Категория</div>
+      <input id="recipeCategory" class="input" placeholder="Мои рецепты" />
+    </div>
+
+    <div class="field">
+  	<div class="label">Ингредиенты</div>
+
+  	<div class="toolbar" style="margin-bottom:10px">
+   	<button class="btn secondary small" onclick="showProductPickerForRecipe()">+ Из базы</button>
+  	</div>
+
+  	<div class="ingredients" id="recipeIngredients"></div>
+
+  	<div class="mini">Добавляй продукты и настраивай граммовки.</div>
+	</div>
+
+    <div class="field">
+      <div class="label">Приготовление</div>
+      <textarea id="recipeInstructions" class="textarea" placeholder="Шаги приготовления..."></textarea>
+    </div>
+
+    <div class="card" style="padding:12px;margin-bottom:12px">
+      <div class="row" style="margin-bottom:10px">
+        <div>
+          <div style="font-weight:700">КБЖУ рецепта</div>
+          <div class="mini">Сумма всех ингредиентов</div>
+        </div>
+        <div class="chip" id="recipeKetoChip">Кето: 0 : 1</div>
+      </div>
+      <div class="recipe-kbzu">
+        <div class="kbzu"><div class="val" id="recipeCal">0</div><div class="lbl">Ккал</div></div>
+        <div class="kbzu"><div class="val" id="recipeP">0</div><div class="lbl">Белки</div></div>
+        <div class="kbzu"><div class="val" id="recipeF">0</div><div class="lbl">Жиры</div></div>
+        <div class="kbzu"><div class="val" id="recipeC">0</div><div class="lbl">Углеводы</div></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary" onclick="saveRecipe()">Сохранить рецепт</button>
+      <button class="btn secondary" onclick="fillFromCurrentMeal()">Заполнить из текущего приёма</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="pickerModal"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const STORAGE_KEY = 'keto-planner-pro';
+  const uid = () => Date.now() + Math.floor(Math.random() * 1000);
+
+  const defaultProducts = [
+    	{ id: 1, name: "Яйцо куриное", category: "Яйцо", protein: 12.8, fat: 11.3, carbs: 0.7, calories: 155 },
+            { id: 2, name: "Яичный желток", category: "Яйцо", protein: 16.1, fat: 31.9, carbs: 0.3, calories: 352 },
+            { id: 3, name: "Яичный белок", category: "Яйцо", protein: 11.1, fat: 0.0, carbs: 0.7, calories: 52 },
+            { id: 4, name: "Масло сливочное", category: "Жиры и масла", protein: 0.6, fat: 82.5, carbs: 0.8, calories: 748 },
+            { id: 5, name: "Топленое масло", category: "Жиры и масла", protein: 0.3, fat: 99.5, carbs: 0.0, calories: 896 },
+            { id: 6, name: "Кокосовое масло", category: "Жиры и масла", protein: 0.8, fat: 99.0, carbs: 0.0, calories: 862 },
+            { id: 7, name: "Оливковое масло", category: "Жиры и масла", protein: 0.0, fat: 100.0, carbs: 0.0, calories: 884 },
+            { id: 8, name: "Майонез", category: "Жиры и масла", protein: 1.1, fat: 84.0, carbs: 3.7, calories: 762 },
+            { id: 9, name: "Майонез слобода", category: "Жиры и масла", protein: 0.5, fat: 67.0, carbs: 1.2, calories: 627 },
+            { id: 10, name: "Авокадо", category: "Овощи", protein: 1.9, fat: 23.5, carbs: 0.4, calories: 208 },
+            { id: 11, name: "Лосось", category: "Рыба", protein: 19.9, fat: 13.6, carbs: 0.0, calories: 208 },
+            { id: 12, name: "Тунец в банке", category: "Рыба", protein: 23.2, fat: 0.9, carbs: 0.0, calories: 103 },
+            { id: 13, name: "Куриная грудка сырая", category: "Мясо", protein: 22.2, fat: 6.2, carbs: 0.0, calories: 148 },
+            { id: 14, name: "Говяжий фарш", category: "Мясо", protein: 12.0, fat: 35.0, carbs: 0.0, calories: 363 },
+            { id: 15, name: "Свинина метро", category: "Мясо", protein: 14.0, fat: 33.0, carbs: 0.0, calories: 357 },
+            { id: 16, name: "Бекон", category: "Колбаса", protein: 17.0, fat: 25.0, carbs: 0.6, calories: 295 },
+            { id: 17, name: "Салями", category: "Колбаса", protein: 24.7, fat: 37.9, carbs: 0.7, calories: 442 },
+            { id: 18, name: "Сливки 33%", category: "Молоко", protein: 1.9, fat: 33.0, carbs: 2.8, calories: 322 },
+            { id: 19, name: "Сливки 35%", category: "Молоко", protein: 2.1, fat: 35.0, carbs: 3.1, calories: 337 },
+            { id: 20, name: "Сметана 30% президент", category: "Молоко", protein: 2.3, fat: 30.0, carbs: 3.1, calories: 294 },
+            { id: 21, name: "Творог 9%", category: "Сыр", protein: 15.0, fat: 9.0, carbs: 1.5, calories: 159 },
+            { id: 22, name: "Маскарпоне", category: "Сыр", protein: 7.0, fat: 30.0, carbs: 3.0, calories: 323 },
+            { id: 23, name: "Моцарелла", category: "Сыр", protein: 18.6, fat: 19.8, carbs: 0.0, calories: 253 },
+            { id: 24, name: "Пармезан, 37%", category: "Сыр", protein: 35.6, fat: 25.8, carbs: 0.0, calories: 392 },
+            { id: 25, name: "Чеддер 50%", category: "Сыр", protein: 25.4, fat: 32.2, carbs: 0.0, calories: 403 },
+            { id: 26, name: "Миндаль", category: "Орех", protein: 18.7, fat: 54.1, carbs: 5.4, calories: 576 },
+            { id: 27, name: "Грецкий орех", category: "Орех", protein: 14.4, fat: 62.5, carbs: 10.6, calories: 654 },
+            { id: 28, name: "Макадамия", category: "Орех", protein: 7.5, fat: 73.0, carbs: 4.0, calories: 718 },
+            { id: 29, name: "Брокколи сырая", category: "Овощи", protein: 3.3, fat: 0.2, carbs: 2.5, calories: 34 },
+            { id: 30, name: "Цветная капуста", category: "Овощи", protein: 2.5, fat: 0.3, carbs: 2.3, calories: 25 },
+            { id: 31, name: "Кабачки/Цукини", category: "Овощи", protein: 1.6, fat: 0.4, carbs: 2.2, calories: 24 },
+            { id: 32, name: "Шпинат, сырой", category: "Овощи", protein: 2.5, fat: 0.3, carbs: 0.6, calories: 23 },
+            { id: 33, name: "Малина", category: "Фрукты", protein: 1.3, fat: 0.3, carbs: 4.8, calories: 52 },
+            { id: 34, name: "Черника сырая", category: "Фрукты", protein: 0.7, fat: 0.6, carbs: 6.1, calories: 57 },
+            { id: 35, name: "Какао-порошок", category: "Сладости", protein: 22.0, fat: 21.0, carbs: 13.0, calories: 325 },
+            { id: 36, name: "Шоколад 85%", category: "Сладости", protein: 6.8, fat: 58.0, carbs: 20.0, calories: 598 },
+            { id: 37, name: "Кето-шоколад", category: "Сладости", protein: 5.6, fat: 84.4, carbs: 1.9, calories: 798 },
+            { id: 38, name: "Эритритол", category: "Сладости", protein: 0.0, fat: 0.0, carbs: 0.0, calories: 0 },
+            { id: 39, name: "Миндальная мука", category: "Мука и крупы", protein: 18.7, fat: 54.1, carbs: 3.7, calories: 571 },
+            { id: 40, name: "Кокосовая мука", category: "Мука и крупы", protein: 19.1, fat: 8.1, carbs: 20.8, calories: 290 },
+            { id: 41, name: "Порошок из оболочек семян подорожника", category: "Мука и крупы", protein: 4.6, fat: 0.0, carbs: 0.0, calories: 20 },
+            { id: 42, name: "Разрыхлитель", category: "Выпечка", protein: 0.0, fat: 0.0, carbs: 28.0, calories: 53 },
+            { id: 43, name: "Ванильный экстракт", category: "Спец. Продукты", protein: 0.0, fat: 0.0, carbs: 12.0, calories: 288 },
+            { id: 44, name: "Корица", category: "Спец. Продукты", protein: 4.0, fat: 1.2, carbs: 81.0, calories: 247 },
+            { id: 45, name: "Рикотта", category: "Сыр", protein: 11.0, fat: 13.0, carbs: 3.0, calories: 174 },
+            { id: 46, name: "Лимонный сок", category: "Сок", protein: 0.4, fat: 0.1, carbs: 2.4, calories: 22 },
+            { id: 47, name: "Кокосовое молоко", category: "Молоко", protein: 1.6, fat: 18.5, carbs: 1.95, calories: 187 },
+            { id: 48, name: "Агар-агар", category: "Мука и крупы", protein: 1.7, fat: 0.0, carbs: 0.0, calories: 7 },
+            { id: 49, name: "Широтаки", category: "Спец. Продукты", protein: 0.0, fat: 0.0, carbs: 0.6, calories: 10 },
+            { id: 50, name: "Охотничьи колбаски", category: "Колбаса", protein: 14.8, fat: 16.2, carbs: 0.0, calories: 206 },
+            { id: 51, name: "Лук репчатый", category: "Овощи", protein: 1.2, fat: 0.3, carbs: 4.9, calories: 41 },
+            { id: 52, name: "Морковь сырая", category: "Овощи", protein: 1.0, fat: 0.2, carbs: 4.8, calories: 41 },
+            { id: 53, name: "Томатная паста", category: "Овощи", protein: 6.2, fat: 1.2, carbs: 18.5, calories: 102 },
+            { id: 54, name: "Тыква сырая", category: "Овощи", protein: 1.0, fat: 0.1, carbs: 4.5, calories: 26 },
+            { id: 55, name: "Апенцелле 50%", category: "Сыр", protein: 25.4, fat: 31.6, carbs: 0.0, calories: 394 },
+            { id: 56, name: "Масло какао", category: "Жиры и масла", protein: 0.0, fat: 99.5, carbs: 0.0, calories: 884 },
+            { id: 57, name: "Протеин", category: "Спец. Продукты", protein: 89.0, fat: 2.0, carbs: 3.0, calories: 386 },
+            { id: 58, name: "Краснокачанная капуста, сырая", category: "Овощи", protein: 1.5, fat: 0.2, carbs: 3.5, calories: 31 },
+            { id: 59, name: "Баклажан", category: "Овощи", protein: 1.2, fat: 0.2, carbs: 2.5, calories: 25 },
+            { id: 60, name: "Томат, сырой", category: "Овощи", protein: 1.0, fat: 0.2, carbs: 2.6, calories: 18 },
+            { id: 61, name: "Сельдь", category: "Рыба", protein: 18.2, fat: 17.8, carbs: 0.0, calories: 233 },
+            { id: 62, name: "Треска", category: "Рыба", protein: 17.7, fat: 0.6, carbs: 0.0, calories: 78 },
+            { id: 63, name: "Креветки заморозка", category: "Рыба", protein: 18.3, fat: 1.3, carbs: 0.0, calories: 87 },
+            { id: 64, name: "Кальмар", category: "Рыба", protein: 21.0, fat: 1.0, carbs: 0.0, calories: 92 },
+            { id: 65, name: "Утка, сырая", category: "Мясо", protein: 18.1, fat: 17.2, carbs: 0.0, calories: 235 },
+            { id: 66, name: "Гусь, сырой", category: "Мясо", protein: 15.7, fat: 31.0, carbs: 0.0, calories: 310 },
+            { id: 67, name: "Сало", category: "Мясо", protein: 4.1, fat: 82.5, carbs: 0.0, calories: 797 },
+            { id: 68, name: "Ветчина, вареная", category: "Колбаса", protein: 22.5, fat: 3.7, carbs: 0.0, calories: 125 },
+            { id: 69, name: "Сардельки", category: "Колбаса", protein: 10.2, fat: 28.3, carbs: 0.0, calories: 303 },
+            { id: 70, name: "Молоко 3,5%", category: "Молоко", protein: 3.3, fat: 3.5, carbs: 4.8, calories: 62 },
+            { id: 71, name: "Молоко 1,5%", category: "Молоко", protein: 3.4, fat: 1.5, carbs: 4.9, calories: 45 },
+            { id: 72, name: "Творог 15%", category: "Сыр", protein: 14.0, fat: 15.0, carbs: 2.6, calories: 208 },
+            { id: 73, name: "Творог 20%", category: "Сыр", protein: 12.5, fat: 5.1, carbs: 2.7, calories: 121 },
+            { id: 74, name: "Фета 45%", category: "Сыр", protein: 16.7, fat: 18.1, carbs: 0.5, calories: 243 },
+            { id: 75, name: "Бри, 50%", category: "Сыр", protein: 22.6, fat: 27.9, carbs: 0.1, calories: 334 },
+            { id: 76, name: "Камамбер 45%", category: "Сыр", protein: 21.0, fat: 22.3, carbs: 0.1, calories: 291 },
+            { id: 77, name: "Гауда 48%", category: "Сыр", protein: 22.7, fat: 28.0, carbs: 0.0, calories: 356 },
+            { id: 78, name: "Кешью", category: "Орех", protein: 17.2, fat: 42.2, carbs: 30.5, calories: 553 },
+            { id: 79, name: "Фундук", category: "Орех", protein: 12.0, fat: 61.6, carbs: 10.5, calories: 628 },
+            { id: 80, name: "Арахис", category: "Орех", protein: 25.3, fat: 48.1, carbs: 7.5, calories: 551 },
+            { id: 81, name: "Фисташка", category: "Орех", protein: 20.8, fat: 51.6, carbs: 11.6, calories: 560 },
+            { id: 82, name: "Семена тыквы", category: "Орех", protein: 24.4, fat: 45.6, carbs: 14.2, calories: 559 },
+            { id: 83, name: "Кунжут", category: "Орех", protein: 17.7, fat: 50.4, carbs: 10.2, calories: 565 },
+            { id: 84, name: "Льняное семя", category: "Орех", protein: 28.8, fat: 30.9, carbs: 0.0, calories: 534 },
+            { id: 85, name: "Огурец, сырой", category: "Овощи", protein: 0.6, fat: 0.2, carbs: 1.8, calories: 15 },
+            { id: 86, name: "Спаржа", category: "Овощи", protein: 1.9, fat: 0.2, carbs: 2.0, calories: 20 },
+            { id: 87, name: "Перец болгарский", category: "Овощи", protein: 1.1, fat: 0.2, carbs: 2.9, calories: 27 },
+            { id: 88, name: "Квашенная капуста (без рассола)", category: "Овощи", protein: 1.5, fat: 0.3, carbs: 0.8, calories: 19 },
+            { id: 89, name: "Картофель сырой, приготовленный", category: "Овощи", protein: 2.0, fat: 0.1, carbs: 14.8, calories: 77 },
+            { id: 90, name: "Свекла, вареная", category: "Овощи", protein: 1.1, fat: 0.1, carbs: 5.0, calories: 44 },
+            { id: 91, name: "Шампиньены", category: "Грибы", protein: 4.3, fat: 1.0, carbs: 0.1, calories: 27 },
+            { id: 92, name: "Вешенка", category: "Грибы", protein: 2.3, fat: 0.2, carbs: 0.0, calories: 33 },
+            { id: 93, name: "Лисички, сырые", category: "Грибы", protein: 2.4, fat: 0.5, carbs: 0.2, calories: 38 },
+            { id: 94, name: "Клубника заморозка", category: "Фрукты", protein: 0.8, fat: 0.0, carbs: 5.8, calories: 35 },
+            { id: 95, name: "Ежевика", category: "Фрукты", protein: 1.2, fat: 1.0, carbs: 6.2, calories: 43 },
+            { id: 96, name: "Йогурт кокосовый", category: "Молоко", protein: 1.68, fat: 22.11, carbs: 4.0, calories: 230 },
+            { id: 97, name: "Шоколад 70%", category: "Сладости", protein: 8.0, fat: 40.0, carbs: 33.0, calories: 546 },
+            { id: 98, name: "Кето-шоколад белый", category: "Сладости", protein: 4.4, fat: 89.4, carbs: 1.2, calories: 826 },
+            { id: 99, name: "Тофу Bio Premium", category: "Соевые продукты", protein: 18.5, fat: 9.4, carbs: 0.6, calories: 168 },
+            { id: 100, name: "Льняное масло", category: "Жиры и масла", protein: 0.0, fat: 100.0, carbs: 0.0, calories: 884 },
+            { id: 101, name: "Масло МСТ", category: "Жиры и масла", protein: 0.0, fat: 100.0, carbs: 0.0, calories: 837 },
+            { id: 102, name: "Горчица, острая", category: "Соус, суп", protein: 6.0, fat: 4.0, carbs: 15.0, calories: 124 },
+            { id: 103, name: "Кетчуп, HEINZ (LITE)", category: "Соус, суп", protein: 1.33, fat: 0.0, carbs: 13.33, calories: 58 },
+            { id: 104, name: "Оливки, зеленые", category: "Маринад", protein: 1.4, fat: 13.9, carbs: 1.7, calories: 145 },
+            { id: 105, name: "Маслины, черные", category: "Маринад", protein: 2.2, fat: 35.8, carbs: 4.9, calories: 363 },
+            { id: 106, name: "Корнишены, маринованные", category: "Маринад", protein: 1.0, fat: 0.2, carbs: 3.8, calories: 24 },
+            { id: 107, name: "Уксус", category: "Маринад", protein: 0.0, fat: 0.0, carbs: 1.0, calories: 18 },
+            { id: 108, name: "Бальзамический уксус", category: "Маринад", protein: 0.0, fat: 0.0, carbs: 25.2, calories: 108 },
+            { id: 109, name: "Желатин", category: "Выпечка", protein: 84.2, fat: 0.1, carbs: 0.0, calories: 337 },
+            { id: 110, name: "Дрожжи", category: "Выпечка", protein: 16.7, fat: 1.2, carbs: 0.0, calories: 105 },
+            { id: 111, name: "Печень трески", category: "Рыба", protein: 6.0, fat: 66.0, carbs: 0.0, calories: 613 },
+            { id: 112, name: "Сардины в банках", category: "Рыба", protein: 24.1, fat: 13.9, carbs: 0.0, calories: 221 },
+            { id: 113, name: "Палтус", category: "Рыба", protein: 20.1, fat: 1.6, carbs: 0.0, calories: 91 },
+            { id: 114, name: "Сом", category: "Рыба", protein: 15.8, fat: 1.9, carbs: 0.0, calories: 80 },
+            { id: 115, name: "Макрель", category: "Рыба", protein: 18.7, fat: 11.9, carbs: 0.0, calories: 185 },
+            { id: 116, name: "Пангасиус", category: "Рыба", protein: 11.0, fat: 2.0, carbs: 0.0, calories: 70 },
+            { id: 117, name: "Окунь", category: "Рыба", protein: 18.2, fat: 3.6, carbs: 0.0, calories: 103 },
+            { id: 118, name: "Пикша", category: "Рыба", protein: 17.9, fat: 0.6, carbs: 0.0, calories: 78 },
+            { id: 119, name: "Хек", category: "Рыба", protein: 17.2, fat: 2.5, carbs: 0.0, calories: 86 },
+            { id: 120, name: "Сайда", category: "Рыба", protein: 18.3, fat: 0.9, carbs: 0.0, calories: 81 },
+            { id: 121, name: "Морской язык", category: "Рыба", protein: 17.5, fat: 1.4, carbs: 0.0, calories: 70 },
+            { id: 122, name: "Тюрбо", category: "Рыба", protein: 16.7, fat: 1.7, carbs: 0.0, calories: 78 },
+            { id: 123, name: "Омар", category: "Рыба", protein: 15.9, fat: 1.9, carbs: 0.0, calories: 77 },
+            { id: 124, name: "Рак", category: "Рыба", protein: 15.0, fat: 0.5, carbs: 0.0, calories: 67 },
+            { id: 125, name: "Каракатица", category: "Рыба", protein: 16.1, fat: 0.9, carbs: 0.0, calories: 69 },
+            { id: 126, name: "Лещь", category: "Рыба", protein: 16.6, fat: 5.5, carbs: 0.0, calories: 115 },
+            { id: 127, name: "Сиг", category: "Рыба", protein: 17.8, fat: 3.2, carbs: 0.0, calories: 97 },
+            { id: 128, name: "Форель (речная)", category: "Рыба", protein: 19.5, fat: 2.7, carbs: 0.0, calories: 102 },
+            { id: 129, name: "Тилапия", category: "Рыба", protein: 20.0, fat: 1.0, carbs: 0.0, calories: 96 },
+            { id: 130, name: "Линь", category: "Рыба", protein: 17.7, fat: 0.7, carbs: 0.0, calories: 75 },
+            { id: 131, name: "Судак", category: "Рыба", protein: 19.2, fat: 0.7, carbs: 0.0, calories: 84 },
+            { id: 132, name: "Угорь копченый", category: "Рыба", protein: 17.9, fat: 28.6, carbs: 0.0, calories: 326 },
+            { id: 133, name: "Лосось, копченый", category: "Рыба", protein: 28.5, fat: 19.4, carbs: 0.0, calories: 260 },
+            { id: 134, name: "Макрель, копченая", category: "Рыба", protein: 20.7, fat: 15.5, carbs: 0.0, calories: 221 },
+            { id: 135, name: "Сельдь, копченая", category: "Рыба", protein: 21.2, fat: 15.5, carbs: 0.0, calories: 225 },
+            { id: 136, name: "Сельдь, маринованная", category: "Рыба", protein: 16.5, fat: 16.0, carbs: 0.0, calories: 212 },
+            { id: 137, name: "Лососль в масле", category: "Рыба", protein: 16.4, fat: 22.8, carbs: 0.0, calories: 274 },
+            { id: 138, name: "Рыбные палочки", category: "Рыба", protein: 13.0, fat: 8.1, carbs: 18.0, calories: 190 },
+            { id: 139, name: "Куриная ножка, с кожей, сырая", category: "Мясо", protein: 17.0, fat: 15.0, carbs: 0.0, calories: 207 },
+            { id: 140, name: "фарш мираторг", category: "Мясо", protein: 14.0, fat: 28.0, carbs: 0.0, calories: 316 },
+            { id: 141, name: "фарш свиной мираторг", category: "Мясо", protein: 12.0, fat: 35.0, carbs: 0.0, calories: 363 },
+            { id: 142, name: "Фарш Атяшиво свинина", category: "Мясо", protein: 13.0, fat: 30.0, carbs: 0.0, calories: 330 },
+            { id: 143, name: "фарш фермерский", category: "Мясо", protein: 11.0, fat: 34.0, carbs: 0.0, calories: 358 },
+            { id: 144, name: "Говядина метро", category: "Мясо", protein: 18.0, fat: 15.0, carbs: 0.0, calories: 215 },
+            { id: 145, name: "Говяжья нога", category: "Мясо", protein: 21.0, fat: 7.1, carbs: 0.0, calories: 151 },
+            { id: 146, name: "говядина (ростбиф), сырой", category: "Мясо", protein: 22.4, fat: 4.5, carbs: 0.0, calories: 131 },
+            { id: 147, name: "Свинина вареная", category: "Мясо", protein: 19.0, fat: 28.0, carbs: 1.0, calories: 320 },
+            { id: 148, name: "Котлетта", category: "Мясо", protein: 20.3, fat: 5.2, carbs: 0.0, calories: 130 },
+            { id: 149, name: "Шницель", category: "Мясо", protein: 22.2, fat: 1.9, carbs: 0.0, calories: 106 },
+            { id: 150, name: "Фарш свино-говяжий", category: "Мясо", protein: 20.0, fat: 20.0, carbs: 0.0, calories: 260 },
+            { id: 151, name: "Свинина, котлетное мясо Лента", category: "Мясо", protein: 8.0, fat: 55.0, carbs: 0.0, calories: 535 },
+            { id: 152, name: "Жаркое из свинины, лук", category: "Мясо", protein: 17.0, fat: 16.5, carbs: 0.0, calories: 220 },
+            { id: 153, name: "тефтели из индейки рестория", category: "Мясо", protein: 13.0, fat: 25.0, carbs: 1.0, calories: 285 },
+            { id: 154, name: "Боквурст", category: "Колбаса", protein: 12.3, fat: 25.3, carbs: 0.0, calories: 285 },
+            { id: 155, name: "Свинная колбаса", category: "Колбаса", protein: 10.0, fat: 40.0, carbs: 0.0, calories: 420 },
+            { id: 156, name: "Мясной рулет", category: "Колбаса", protein: 11.5, fat: 31.7, carbs: 0.5, calories: 345 },
+            { id: 157, name: "Телячья колбаса", category: "Колбаса", protein: 10.3, fat: 25.0, carbs: 0.0, calories: 275 },
+            { id: 158, name: "Печеночный паштет", category: "Колбаса", protein: 14.2, fat: 28.6, carbs: 0.0, calories: 320 },
+            { id: 159, name: "Колбаса грубая", category: "Колбаса", protein: 15.9, fat: 29.2, carbs: 0.0, calories: 335 },
+            { id: 160, name: "Браунгшвейская колбаса", category: "Колбаса", protein: 13.9, fat: 37.2, carbs: 0.0, calories: 400 },
+            { id: 161, name: "сосиски с ряженкой", category: "Колбаса", protein: 10.0, fat: 16.0, carbs: 0.0, calories: 190 },
+            { id: 162, name: "Мюнхенская белая колбаса", category: "Колбаса", protein: 11.1, fat: 27.0, carbs: 0.0, calories: 295 },
+            { id: 163, name: "новорусский", category: "Колбаса", protein: 14.0, fat: 22.0, carbs: 0.0, calories: 260 },
+            { id: 164, name: "Ветчина, копченый бекон", category: "Колбаса", protein: 20.7, fat: 7.7, carbs: 0.0, calories: 158 },
+            { id: 165, name: "Ветчина, копченая", category: "Колбаса", protein: 18.3, fat: 4.4, carbs: 0.0, calories: 115 },
+            { id: 166, name: "Прослойка", category: "Колбаса", protein: 9.1, fat: 65.0, carbs: 0.0, calories: 635 },
+            { id: 167, name: "Колбаска, рубленная", category: "Колбаса", protein: 17.5, fat: 27.8, carbs: 1.3, calories: 325 },
+            { id: 168, name: "Творог из питьевого молока 3,5%", category: "Молоко", protein: 3.3, fat: 3.5, carbs: 4.0, calories: 62 },
+            { id: 169, name: "Йогурт 1,5%", category: "Молоко", protein: 3.4, fat: 1.5, carbs: 4.1, calories: 45 },
+            { id: 170, name: "Творог обезжиренный", category: "Молоко", protein: 13.5, fat: 0.3, carbs: 3.2, calories: 72 },
+            { id: 171, name: "Творог 15% Президент", category: "Сыр", protein: 14.0, fat: 15.0, carbs: 2.6, calories: 208 },
+            { id: 172, name: "Плавленный сыр сливочный", category: "Сыр", protein: 6.0, fat: 23.5, carbs: 2.8, calories: 255 },
+            { id: 173, name: "сыр Филадельфия", category: "Сыр", protein: 5.4, fat: 24.5, carbs: 3.2, calories: 265 },
+            { id: 174, name: "Сыр сливочный с травамми", category: "Сыр", protein: 22.5, fat: 29.5, carbs: 0.0, calories: 365 },
+            { id: 175, name: "Эдам, 45%", category: "Сыр", protein: 24.3, fat: 28.3, carbs: 0.0, calories: 356 },
+            { id: 176, name: "Эмменталь 45%", category: "Сыр", protein: 28.9, fat: 31.2, carbs: 0.0, calories: 403 },
+            { id: 177, name: "Горгонзола", category: "Сыр", protein: 19.4, fat: 31.2, carbs: 0.0, calories: 365 },
+            { id: 178, name: "Тильзин 45%", category: "Сыр", protein: 26.3, fat: 27.7, carbs: 0.0, calories: 356 },
+            { id: 179, name: "Пекорино", category: "Сыр", protein: 24.0, fat: 32.0, carbs: 0.0, calories: 392 },
+            { id: 180, name: "Камбоцола, 70%", category: "Сыр", protein: 13.2, fat: 40.0, carbs: 0.0, calories: 420 },
+            { id: 181, name: "Камамбер 60%", category: "Сыр", protein: 17.9, fat: 34.0, carbs: 0.0, calories: 380 },
+            { id: 182, name: "Маскарпоне, Альнатура", category: "Сыр", protein: 2.1, fat: 40.0, carbs: 2.0, calories: 400 },
+            { id: 183, name: "Маскарпоне UnoOro", category: "Сыр", protein: 4.3, fat: 41.5, carbs: 4.8, calories: 430 },
+            { id: 184, name: "Жареный арахис", category: "Орех", protein: 25.6, fat: 49.4, carbs: 9.4, calories: 590 },
+            { id: 185, name: "Кокосовая стружка", category: "Орех", protein: 5.6, fat: 62.0, carbs: 6.4, calories: 620 },
+            { id: 186, name: "Макадамия, норма", category: "Орех", protein: 7.2, fat: 79.0, carbs: 4.3, calories: 750 },
+            { id: 187, name: "Бразильский орех", category: "Орех", protein: 17.5, fat: 73.7, carbs: 3.0, calories: 750 },
+            { id: 188, name: "Орех-Пекан", category: "Орех", protein: 9.3, fat: 72.0, carbs: 4.4, calories: 720 },
+            { id: 189, name: "Кедровый орех", category: "Орех", protein: 13.0, fat: 60.0, carbs: 20.5, calories: 670 },
+            { id: 190, name: "Семеня подслонечника", category: "Орех", protein: 22.5, fat: 49.0, carbs: 12.3, calories: 580 },
+            { id: 191, name: "Артишок", category: "Овощи", protein: 2.4, fat: 0.1, carbs: 2.6, calories: 22 },
+            { id: 192, name: "Сельдерей(многолетний) сырой", category: "Овощи", protein: 1.2, fat: 0.2, carbs: 2.2, calories: 16 },
+            { id: 193, name: "Цветная капуста заморозка", category: "Овощи", protein: 3.0, fat: 0.3, carbs: 5.2, calories: 35 },
+            { id: 194, name: "Цикорий сырой", category: "Овощи", protein: 1.3, fat: 0.2, carbs: 2.4, calories: 23 },
+            { id: 195, name: "Китайская капуста сырая", category: "Овощи", protein: 1.2, fat: 0.3, carbs: 1.2, calories: 13 },
+            { id: 196, name: "Салат Айсберг сырой", category: "Овощи", protein: 0.7, fat: 0.3, carbs: 1.9, calories: 14 },
+            { id: 197, name: "Горох замороженный", category: "Овощи", protein: 7.1, fat: 0.5, carbs: 12.7, calories: 81 },
+            { id: 198, name: "Фенхель", category: "Овощи", protein: 1.4, fat: 0.3, carbs: 2.8, calories: 31 },
+            { id: 199, name: "Весенний лук, сырой", category: "Овощи", protein: 2.0, fat: 0.5, carbs: 3.0, calories: 32 },
+            { id: 200, name: "Капуста (коричневая), сырая", category: "Овощи", protein: 4.3, fat: 0.9, carbs: 2.5, calories: 35 },
+            { id: 201, name: "Сельдерей (клубень), сырой", category: "Овощи", protein: 1.6, fat: 0.3, carbs: 2.3, calories: 21 },
+            { id: 202, name: "Кольраби", category: "Овощи", protein: 1.9, fat: 0.1, carbs: 3.7, calories: 27 },
+            { id: 203, name: "Листья салата, сырые", category: "Салат", protein: 1.2, fat: 0.2, carbs: 1.1, calories: 15 },
+            { id: 204, name: "Мангольд, сырой", category: "Овощи", protein: 2.1, fat: 0.3, carbs: 0.7, calories: 20 },
+            { id: 205, name: "Лук-Порей, сырой", category: "Овощи", protein: 2.2, fat: 0.3, carbs: 3.3, calories: 33 },
+            { id: 206, name: "Редька, сырая", category: "Овощи", protein: 1.1, fat: 0.1, carbs: 2.1, calories: 16 },
+            { id: 207, name: "Ревень сырой", category: "Овощи", protein: 0.6, fat: 0.1, carbs: 1.4, calories: 11 },
+            { id: 208, name: "Брюссельская капуста", category: "Овощи", protein: 4.5, fat: 0.3, carbs: 3.3, calories: 43 },
+            { id: 209, name: "Козелец", category: "Овощи", protein: 1.4, fat: 0.4, carbs: 1.6, calories: 17 },
+            { id: 210, name: "Шпинат, заморозка", category: "Овощи", protein: 2.3, fat: 0.3, carbs: 0.5, calories: 20 },
+            { id: 211, name: "Сладкий картофель", category: "Овощи", protein: 1.6, fat: 0.6, carbs: 24.1, calories: 103 },
+            { id: 212, name: "Томат консервированный", category: "Овощи", protein: 1.2, fat: 0.2, carbs: 2.7, calories: 18 },
+            { id: 213, name: "Савойская капуста", category: "Овощи", protein: 3.0, fat: 0.4, carbs: 2.4, calories: 28 },
+            { id: 214, name: "Шампиньоны консервированные", category: "Грибы", protein: 3.4, fat: 0.5, carbs: 0.5, calories: 24 },
+            { id: 215, name: "Морель, сырой", category: "Грибы", protein: 2.5, fat: 0.3, carbs: 0.5, calories: 31 },
+            { id: 216, name: "Боровик, сырой", category: "Грибы", protein: 5.4, fat: 0.4, carbs: 0.5, calories: 34 },
+            { id: 217, name: "Сушеные белые грибы", category: "Грибы", protein: 29.5, fat: 3.2, carbs: 4.1, calories: 160 },
+            { id: 218, name: "Ананас", category: "Фрукты", protein: 0.5, fat: 0.2, carbs: 12.4, calories: 50 },
+            { id: 219, name: "яблоко", category: "Фрукты", protein: 0.3, fat: 0.3, carbs: 10.0, calories: 52 },
+            { id: 220, name: "Яблочный сок", category: "Сок", protein: 0.1, fat: 0.0, carbs: 11.7, calories: 46 },
+            { id: 221, name: "Апельсин", category: "Фрукты", protein: 1.0, fat: 0.2, carbs: 8.3, calories: 47 },
+            { id: 222, name: "Апельсиновый сок", category: "Сок", protein: 0.7, fat: 0.2, carbs: 9.4, calories: 45 },
+            { id: 223, name: "Абрикос", category: "Фрукты", protein: 0.9, fat: 0.1, carbs: 8.5, calories: 48 },
+            { id: 224, name: "Банан", category: "Фрукты", protein: 1.2, fat: 0.2, carbs: 20.0, calories: 89 },
+            { id: 225, name: "Груша", category: "Фрукты", protein: 0.4, fat: 0.3, carbs: 11.0, calories: 57 },
+            { id: 226, name: "Клуюника", category: "Фрукты", protein: 0.8, fat: 0.4, carbs: 5.5, calories: 32 },
+            { id: 227, name: "Инжир", category: "Фрукты", protein: 1.3, fat: 0.5, carbs: 12.9, calories: 74 },
+            { id: 228, name: "Гранат", category: "Фрукты", protein: 0.7, fat: 0.6, carbs: 16.7, calories: 83 },
+            { id: 229, name: "Грейпфрут", category: "Фрукты", protein: 0.6, fat: 0.2, carbs: 7.4, calories: 42 },
+            { id: 230, name: "Гуава", category: "Фрукты", protein: 0.9, fat: 0.5, carbs: 5.8, calories: 68 },
+            { id: 231, name: "Черника заморозка", category: "Фрукты", protein: 1.1, fat: 0.4, carbs: 7.6, calories: 57 },
+            { id: 232, name: "Голубика", category: "Фрукты", protein: 1.0, fat: 0.5, carbs: 6.6, calories: 57 },
+            { id: 233, name: "Бузиновый сок", category: "Сок", protein: 2.0, fat: 0.4, carbs: 6.8, calories: 40 },
+            { id: 234, name: "Дыня", category: "Фрукты", protein: 0.9, fat: 0.1, carbs: 12.4, calories: 54 },
+            { id: 235, name: "Смородина черная", category: "Фрукты", protein: 1.3, fat: 0.2, carbs: 6.1, calories: 44 },
+            { id: 236, name: "Смородина красная", category: "Фрукты", protein: 1.1, fat: 0.2, carbs: 4.8, calories: 43 },
+            { id: 237, name: "хурма", category: "Фрукты", protein: 0.5, fat: 0.4, carbs: 15.3, calories: 70 },
+            { id: 238, name: "Вишня сладкая", category: "Фрукты", protein: 0.9, fat: 0.3, carbs: 13.3, calories: 63 },
+            { id: 239, name: "вишня кислая", category: "Фрукты", protein: 0.9, fat: 0.5, carbs: 9.9, calories: 50 },
+            { id: 240, name: "Киви", category: "Фрукты", protein: 0.9, fat: 0.6, carbs: 9.1, calories: 61 },
+            { id: 241, name: "Личи", category: "Фрукты", protein: 0.9, fat: 0.3, carbs: 17.0, calories: 66 },
+            { id: 242, name: "Мандарин", category: "Фрукты", protein: 0.6, fat: 0.3, carbs: 10.2, calories: 53 },
+            { id: 243, name: "Манго", category: "Фрукты", protein: 0.6, fat: 0.5, carbs: 12.5, calories: 60 },
+            { id: 244, name: "Дыня зеленая", category: "Фрукты", protein: 1.0, fat: 0.0, carbs: 5.3, calories: 34 },
+            { id: 245, name: "Нектарин", category: "Фрукты", protein: 0.9, fat: 0.1, carbs: 12.4, calories: 44 },
+            { id: 246, name: "Папайя", category: "Фрукты", protein: 0.5, fat: 0.1, carbs: 7.1, calories: 43 },
+            { id: 247, name: "Маракуя, сырая, шелушистая", category: "Фрукты", protein: 2.4, fat: 0.4, carbs: 9.5, calories: 97 },
+            { id: 248, name: "Персик", category: "Фрукты", protein: 0.8, fat: 0.1, carbs: 8.9, calories: 39 },
+            { id: 249, name: "Слива", category: "Фрукты", protein: 0.6, fat: 0.2, carbs: 10.2, calories: 46 },
+            { id: 250, name: "Виноград", category: "Фрукты", protein: 0.7, fat: 0.3, carbs: 15.2, calories: 67 },
+            { id: 251, name: "Изюм", category: "Фрукты", protein: 2.5, fat: 0.6, carbs: 68.0, calories: 299 },
+            { id: 252, name: "Арбуз", category: "Фрукты", protein: 0.6, fat: 0.2, carbs: 8.3, calories: 30 },
+            { id: 253, name: "Яблочное пюре, без подсластителей", category: "Фрукты", protein: 0.2, fat: 0.1, carbs: 11.3, calories: 42 },
+            { id: 254, name: "Кресс-салат, сырой", category: "Салат", protein: 4.2, fat: 0.7, carbs: 2.5, calories: 32 },
+            { id: 255, name: "Шнитт-лук, сырой", category: "Салат", protein: 3.6, fat: 0.7, carbs: 1.6, calories: 30 },
+            { id: 256, name: "Петрушка, сырая", category: "Салат", protein: 4.4, fat: 0.4, carbs: 1.3, calories: 36 },
+            { id: 257, name: "Овощной порошок", category: "Соус, суп", protein: 4.3, fat: 2.4, carbs: 33.5, calories: 175 },
+            { id: 258, name: "Овощьной бульон Alnatura", category: "Соус, суп", protein: 0.2, fat: 0.5, carbs: 0.1, calories: 8 },
+            { id: 259, name: "Мясной суп готовый к употреблени.", category: "Соус, суп", protein: 0.0, fat: 0.0, carbs: 0.0, calories: 0 },
+            { id: 260, name: "Кетчуп, с сахорозаменителем", category: "Соус, суп", protein: 1.5, fat: 0.2, carbs: 16.4, calories: 72 },
+            { id: 261, name: "Кетчуп, RAPUNZEL", category: "Соус, суп", protein: 2.4, fat: 0.2, carbs: 21.0, calories: 95 },
+            { id: 262, name: "соус Манго, без подсластителей", category: "Сок", protein: 0.6, fat: 0.4, carbs: 15.0, calories: 65 },
+            { id: 263, name: "Вода", category: "Сок", protein: 0.0, fat: 0.0, carbs: 0.0, calories: 0 },
+            { id: 264, name: "Соевая мука", category: "Мука и крупы", protein: 42.5, fat: 20.5, carbs: 3.1, calories: 385 },
+            { id: 265, name: "кукурузная манка", category: "Мука и крупы", protein: 8.0, fat: 1.0, carbs: 75.0, calories: 350 },
+            { id: 266, name: "непросеянная пшеница 1700", category: "Мука и крупы", protein: 12.1, fat: 2.0, carbs: 59.7, calories: 310 },
+            { id: 267, name: "рис, полированный, грубый", category: "Мука и крупы", protein: 7.4, fat: 0.6, carbs: 77.7, calories: 350 },
+            { id: 268, name: "лапша с яйцом", category: "Мука и крупы", protein: 12.3, fat: 2.8, carbs: 69.9, calories: 360 },
+            { id: 269, name: "овсяные хлопья", category: "Мука и крупы", protein: 12.0, fat: 6.0, carbs: 70.0, calories: 380 },
+            { id: 270, name: "цельнозероновые макароны", category: "Мука и крупы", protein: 15.0, fat: 3.0, carbs: 64.0, calories: 340 },
+            { id: 271, name: "конопляная каша", category: "Мука и крупы", protein: 23.3, fat: 20.5, carbs: 27.9, calories: 400 },
+            { id: 272, name: "конопляная клетчатка", category: "Мука и крупы", protein: 15.2, fat: 16.0, carbs: 24.7, calories: 300 },
+            { id: 273, name: "Рисовый крахмал", category: "Мука и крупы", protein: 0.8, fat: 0.0, carbs: 85.0, calories: 350 },
+            { id: 274, name: "Семена конопли", category: "Мука и крупы", protein: 20.1, fat: 32.5, carbs: 14.0, calories: 450 },
+            { id: 275, name: "Мука пшеничная Тип 405", category: "Мука и крупы", protein: 10.6, fat: 1.0, carbs: 70.9, calories: 340 },
+            { id: 276, name: "AGAR-AGAR", category: "Мука и крупы", protein: 1.7, fat: 0.0, carbs: 0.0, calories: 7 },
+            { id: 277, name: "Гуаровая камедь", category: "Мука и крупы", protein: 4.6, fat: 0.0, carbs: 0.0, calories: 18 },
+            { id: 278, name: "Овсянка", category: "Мука и крупы", protein: 12.5, fat: 7.0, carbs: 58.7, calories: 350 },
+            { id: 279, name: "манка", category: "Мука и крупы", protein: 10.0, fat: 1.0, carbs: 70.6, calories: 330 },
+            { id: 280, name: "Мука пшеничная, тип Type 1050", category: "Мука и крупы", protein: 11.2, fat: 1.8, carbs: 67.2, calories: 340 },
+            { id: 281, name: "мука пшеничная, грубого помола", category: "Мука и крупы", protein: 11.7, fat: 1.8, carbs: 59.5, calories: 310 },
+            { id: 282, name: "мука полбы, тип 1050", category: "Мука и крупы", protein: 11.2, fat: 1.8, carbs: 67.2, calories: 340 },
+            { id: 283, name: "KetoCal (Infant) 3:1", category: "Спец. Продукты", protein: 15.3, fat: 67.7, carbs: 7.2, calories: 720 },
+            { id: 284, name: "KetoCal (Advance - Vanille) 4:1", category: "Спец. Продукты", protein: 15.25, fat: 73.0, carbs: 3.0, calories: 750 },
+            { id: 285, name: "KetoCal (Advance - neutral) 4:1", category: "Спец. Продукты", protein: 15.25, fat: 73.0, carbs: 3.0, calories: 750 },
+            { id: 286, name: "Calogen = Fettemulsion ( Neutral )", category: "Спец. Продукты", protein: 0.0, fat: 50.0, carbs: 0.0, calories: 450 },
+            { id: 287, name: "Calogen = Fettemulsion (Banane)", category: "Спец. Продукты", protein: 0.0, fat: 50.0, carbs: 4.4, calories: 470 },
+            // Новые продукты
+            { id: 300, name: "Крендель (средний)", category: "Выпечка", protein: 7.1, fat: 1.8, carbs: 45.3, calories: 226 },
+            { id: 301, name: "Песочное печенье", category: "Выпечка", protein: 8.0, fat: 10.0, carbs: 75.0, calories: 422 },
+            { id: 302, name: "Какао порошок, слабо обезжиренный", category: "Сладости", protein: 20.0, fat: 24.0, carbs: 11.0, calories: 340 },
+            { id: 303, name: "Эйдивий сырой", category: "Овощи", protein: 1.8, fat: 0.2, carbs: 1.2, calories: 14 },
+            { id: 304, name: "Руккола, сырая", category: "Салат", protein: 2.6, fat: 0.7, carbs: 2.1, calories: 25 },
+            { id: 305, name: "Камбала речная", category: "Рыба", protein: 16.5, fat: 0.7, carbs: 0.0, calories: 72 },
+            { id: 306, name: "Сардина", category: "Рыба", protein: 19.4, fat: 4.5, carbs: 0.0, calories: 118 },
+            { id: 307, name: "Камбала морская", category: "Рыба", protein: 17.1, fat: 1.9, carbs: 0.0, calories: 85 },
+            { id: 308, name: "Тунец", category: "Рыба", protein: 27.0, fat: 10.0, carbs: 0.0, calories: 198 },
+            { id: 309, name: "Гречневые хлопья мистраль", category: "Мука и крупы", protein: 11.4, fat: 2.4, carbs: 67.0, calories: 335 },
+            { id: 310, name: "Сарделька", category: "Колбаса", protein: 11.9, fat: 28.0, carbs: 0.0, calories: 300 },
+            { id: 311, name: "Колбаса свиная", category: "Колбаса", protein: 10.0, fat: 40.0, carbs: 0.0, calories: 400 },
+            { id: 312, name: "Мусс из лесного ореха", category: "Орех", protein: 15.0, fat: 64.0, carbs: 11.0, calories: 680 },
+            { id: 313, name: "Картофельные чипсы", category: "Выпечка", protein: 5.7, fat: 33.0, carbs: 52.0, calories: 528 },
+            { id: 314, name: "Круассан", category: "Выпечка", protein: 6.7, fat: 25.8, carbs: 47.3, calories: 448 },
+            { id: 315, name: "Корень имбиря", category: "Овощи", protein: 2.5, fat: 0.8, carbs: 11.0, calories: 61 }
+    ];
+
+  function createMeal(name, targetCalories, share=1) {
+    return {
+      id: uid(),
+      name,
+      targetCalories,
+      targetProtein: 0,
+      targetFat: 0,
+      targetCarbs: 0,
+      products: [],
+      share
+    };
+  }
+
+  function seed() {
+  return {
+    plan: 'free', // free | pro | premium
+    settings: {
+        calories: 2200,
+        protein: 120,
+        fat: 150,
+        carbs: 30,
+        mealsCount: 4,
+        ketoGoal: 1.5
+      },
+      products: defaultProducts,
+      meals: [
+        createMeal('Завтрак', 550, 0.25),
+        createMeal('Обед', 550, 0.25),
+        createMeal('Полдник', 550, 0.25),
+        createMeal('Ужин', 550, 0.25)
+      ],
+      	recipes: [],
+	dayTemplates: []
+    };
+  }
+
+  let state = load();
+  let screen = 'day';
+  let currentMealIndex = 0;
+  let editingRecipeId = null;
+  let recipeIngredientDraft = [];
+
+  function load() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return seed();
+
+    const parsed = JSON.parse(saved);
+
+    return {
+      ...seed(),
+      ...parsed,
+      settings: { ...seed().settings, ...(parsed.settings || {}) },
+      products: defaultProducts,
+      meals: (parsed.meals && parsed.meals.length) ? parsed.meals : seed().meals,
+      recipes: parsed.recipes || [],
+      dayTemplates: parsed.dayTemplates || []
+    };
+
+  } catch (e) {
+    console.error('Ошибка загрузки:', e);
+    return seed();
+  }
+}
+
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  function toast(message) {
+    const el = document.getElementById('toast');
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(window.__toastT);
+    window.__toastT = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  function setScreen(next) {
+  screen = next;
+
+  document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+
+  if (next === 'day') document.getElementById('navDay').classList.add('active');
+  if (next === 'meals') document.getElementById('navMeals').classList.add('active');
+  if (next === 'recipes') document.getElementById('navRecipes').classList.add('active');
+  if (next === 'settings') document.getElementById('navSettings')?.classList.add('active');
+
+  render();
+}
+
+  function setPageMeta(title, subtitle) {
+    document.getElementById('pageTitle').textContent = title;
+    document.getElementById('pageSubtitle').textContent = subtitle;
+  }
+
+  function round(n) { return Math.round(n); }
+
+  function calcMealTotals(meal) {
+    return meal.products.reduce((acc, item) => {
+      acc.calories += item.calories || 0;
+      acc.protein += item.protein || 0;
+      acc.fat += item.fat || 0;
+      acc.carbs += item.carbs || 0;
+      return acc;
+    }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
+  }
+
+  function calcRecipeTotals(ingredients) {
+    return ingredients.reduce((acc, item) => {
+      acc.calories += item.calories || 0;
+      acc.protein += item.protein || 0;
+      acc.fat += item.fat || 0;
+      acc.carbs += item.carbs || 0;
+      return acc;
+    }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
+  }
+
+  function ketoRatio(totals) {
+  const denom = (totals.protein || 0) + (totals.carbs || 0);
+  if (denom <= 0) return { value: 0, label: '0 : 1', status: 'bad' };
+
+  const ratio = (totals.fat || 0) / denom;
+  const goal = state.settings.ketoGoal || 1.5;
+
+  let status = 'bad';
+  if (ratio >= goal) status = 'good';
+  else if (ratio >= goal * 0.7) status = 'warn';
+
+  return { value: ratio, label: `${ratio.toFixed(1)} : 1`, status };
+}
+
+  function macroStatus(value, target) {
+    const ratio = target > 0 ? value / target : 0;
+    if (ratio > 1.1) return 'bad';
+    if (ratio >= 0.9) return 'good';
+    if (ratio >= 0.7) return 'warn';
+    return '';
+  }
+
+  function mealTargets(meal) {
+    const s = state.settings;
+    const share = meal.share || 1 / (s.mealsCount || state.meals.length || 1);
+    return {
+      calories: round(s.calories * share),
+      protein: round(s.protein * share),
+      fat: round(s.fat * share),
+      carbs: round(s.carbs * share),
+    };
+  }
+
+  function currentMeal() {
+    return state.meals[currentMealIndex];
+  }
+
+  function render() {
+  if (screen === 'settings') return renderSettings();
+  if (screen === 'day') return renderDay();
+  if (screen === 'meals') return renderMeals();
+  if (screen === 'recipes') return renderRecipes();
+	if (screen === 'dayTemplates') return renderDayTemplates();
+}
+
+  
+  function renderDay() {
+    setPageMeta('Сегодня', 'Сводка по дню и быстрый переход в приёмы пищи.');
+    const dayTotals = state.meals.reduce((acc, meal) => {
+      const t = calcMealTotals(meal);
+      acc.calories += t.calories;
+      acc.protein += t.protein;
+      acc.fat += t.fat;
+      acc.carbs += t.carbs;
+      return acc;
+    }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
+
+    const keto = ketoRatio(dayTotals);
+    const mealCount = state.meals.length || 1;
+    const html = `
+      <div class="grid">
+        <div class="card">
+${!isPro() ? `
+  <div style="
+    background:linear-gradient(135deg,#007aff,#34c759);
+    color:#fff;
+    padding:16px;
+    border-radius:16px;
+    margin-bottom:12px;
+  ">
+    <div style="font-size:14px;opacity:.9">PRO доступ</div>
+    
+    <div style="font-size:22px;font-weight:700;margin:6px 0">
+      299 ₽ / месяц
+    </div>
+
+    <div style="font-size:13px;opacity:.9;margin-bottom:10px">
+      Повторяй дни в 1 тап • Сохраняй рацион • Без лимитов рецептов
+    </div>
+
+    <button class="btn" style="background:#fff;color:#007aff;width:100%"
+      onclick="buyPro()">
+      Попробовать PRO
+    </button>
+  </div>
+` : ''}
+		<div class="toolbar" style="margin-bottom:10px">
+  <button 
+    class="btn secondary small" 
+    onclick="saveDayTemplate()"
+    ${!isPro() ? 'style="opacity:.5"' : ''}
+  >
+    💾 Сохранить день
+  </button>
+
+  <button 
+    class="btn primary small" 
+    onclick="openDayTemplates()"
+    ${!isPro() ? 'style="opacity:.5"' : ''}
+  >
+    ⚡ Повторить день
+  </button>
+</div>
+          <div class="row" style="align-items:flex-end">
+            <div>
+              <div class="mini">Дневная цель</div>
+              <div class="big">${round(dayTotals.calories)} / ${state.settings.calories} ккал</div>
+            </div>
+            <div class="chip ${keto.status}">Кето ${keto.label}</div>
+          </div>
+          <div class="divider"></div>
+          <div class="statgrid">
+            <div class="stat"><div class="v">${round(dayTotals.protein)}</div><div class="l">Белки</div></div>
+            <div class="stat"><div class="v">${round(dayTotals.fat)}</div><div class="l">Жиры</div></div>
+            <div class="stat"><div class="v">${round(dayTotals.carbs)}</div><div class="l">Углеводы</div></div>
+            <div class="stat"><div class="v">${mealCount}</div><div class="l">Приёмов</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row" style="margin-bottom:10px">
+            <div>
+              <div class="section-title" style="margin:0">Приёмы пищи</div>
+              <div class="mini">Нажми на приём, чтобы открыть его состав и сохранить как рецепт.</div>
+            </div>
+            <button class="btn secondary small" onclick="setScreen('recipes')">Рецепты</button>
+          </div>
+          <div class="meal-list">
+            ${state.meals.map((meal, idx) => {
+              const t = calcMealTotals(meal);
+              const target = mealTargets(meal);
+              const k = ketoRatio(t);
+              return `
+                <div class="meal-item" onclick="openMeal(${idx})">
+                  <div style="min-width:0">
+                    <div class="meal-name">${meal.name}</div>
+                    <div class="meal-meta">${round(t.calories)} / ${target.calories} ккал · Кето ${k.label}</div>
+                  </div>
+                  <div class="chip ${k.status}">${round((t.calories / (target.calories || 1)) * 100)}%</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('view').innerHTML = html;
+  }
+
+  function openMeal(index) {
+    currentMealIndex = index;
+    screen = 'meals';
+    document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById('navMeals').classList.add('active');
+    render();
+  }
+
+function openSettings() {
+  setScreen('settings');
+}
+
+function openDay() {
+  setScreen('day');
+}
+
+
+  function renderMeals() {
+    const meal = currentMeal();
+    const totals = calcMealTotals(meal);
+    const target = mealTargets(meal);
+    const k = ketoRatio(totals);
+
+    setPageMeta(meal.name, 'Редактируй граммовки, удаляй и сохраняй этот набор как рецепт.');
+
+    const productsHtml = meal.products.length ? meal.products.map((p, idx) => `
+      <div class="ingredient swipe-row" data-index="${idx}">
+        <div class="left">
+          <div class="name">${p.name}</div>
+          <div class="info">
+            <span>${p.grams} г</span> · 
+            <span class="mini">Б ${round(p.protein)} · Ж ${round(p.fat)} · У ${round(p.carbs)} · ${round(p.calories)} ккал</span>
+          </div>
+        </div>
+        <div class="mini">Тапни по граммам</div>
+      </div>
+    `).join('') : `<div class="empty">Пока в этом приёме ничего нет. Добавь продукты и потом сохрани как рецепт.</div>`;
+
+    const html = `
+      <div class="grid">
+        <div class="card">
+          <div class="row" style="align-items:flex-end">
+            <div>
+              <div class="mini">Факт / цель</div>
+              <div class="big">${round(totals.calories)} / ${target.calories} ккал</div>
+            </div>
+            <div class="chip ${k.status}">Кето ${k.label}</div>
+          </div>
+          <div class="divider"></div>
+          <div class="statgrid">
+            <div class="stat"><div class="v ${macroStatus(totals.protein, target.protein)}">${round(totals.protein)}/${round(target.protein)}</div><div class="l">Белки</div></div>
+            <div class="stat"><div class="v ${macroStatus(totals.fat, target.fat)}">${round(totals.fat)}/${round(target.fat)}</div><div class="l">Жиры</div></div>
+            <div class="stat"><div class="v ${macroStatus(totals.carbs, target.carbs)}">${round(totals.carbs)}/${round(target.carbs)}</div><div class="l">Углеводы</div></div>
+            <div class="stat"><div class="v">${round((totals.calories / (target.calories || 1)) * 100)}%</div><div class="l">Выполнение</div></div>
+          </div>
+        </div>
+
+        
+          <div class="meal-actions">
+  		<button class="btn primary" onclick="showProductPicker()">
+  		📦 Из базы
+		</button>
+
+		<button class="btn ghost" onclick="openAddProductModal()">
+  		✍️ Новый продукт
+		</button>
+	
+          	<button class="btn secondary" onclick="openRecipeModalFromMeal()">
+		📖 Создать рецепт из приёма
+		</button>
+        </div>
+
+        <div class="card">
+          <div class="row" style="margin-bottom:10px">
+            <div>
+              <div class="section-title" style="margin:0">Продукты</div>
+              <div class="mini">Тап по граммам — inline редактирование. Свайп влево — удаление.</div>
+            </div>
+            <button class="btn ghost small" onclick="showProductPicker()">+ Продукт</button>
+          </div>
+          <div class="ingredients" id="mealProducts">${productsHtml}</div>
+        </div>
+      </div>
+    `;
+    document.getElementById('view').innerHTML = html;
+    attachMealInteractions();
+  }
+
+  function attachMealInteractions() {
+    const meal = currentMeal();
+    const nodes = document.querySelectorAll('#mealProducts .swipe-row');
+    nodes.forEach(node => {
+      const index = Number(node.dataset.index);
+      const swipe = node;
+      const start = { x: 0, current: 0, open: false };
+
+      swipe.style.position = 'relative';
+      swipe.style.cursor = 'default';
+      swipe.style.userSelect = 'none';
+      swipe.style.transition = 'transform .25s cubic-bezier(.22,.61,.36,1)';
+      swipe.innerHTML = `
+        <button class="btn danger small" style="position:absolute;right:0;top:0;bottom:0;width:88px;border-radius:0 16px 16px 0;display:flex;align-items:center;justify-content:center" onclick="deleteMealProduct(${index})">Удалить</button>
+        <div class="row" style="margin-right:0; background:#fff; border-radius:16px; position:relative; z-index:1">
+          <div class="left">
+            <div class="name">${meal.products[index].name}</div>
+            <div class="info">
+              <span class="grams-tap" data-idx="${index}" style="color:var(--blue);font-weight:700;cursor:pointer">${meal.products[index].grams} г</span>
+              <span class="mini"> · Б ${round(meal.products[index].protein)} · Ж ${round(meal.products[index].fat)} · У ${round(meal.products[index].carbs)} · ${round(meal.products[index].calories)} ккал</span>
+            </div>
+          </div>
+          <div class="mini">${round(meal.products[index].calories)} ккал</div>
+        </div>
+      `;
+
+      const content = swipe.querySelector('.row');
+      const gramsTap = swipe.querySelector('.grams-tap');
+
+      gramsTap.addEventListener('click', (e) => {
+        e.stopPropagation();
+        startInlineEdit(gramsTap, index);
+      });
+
+      swipe.addEventListener('touchstart', e => {
+        start.x = e.touches[0].clientX;
+        start.current = start.x;
+        if (window.__openSwipe && window.__openSwipe !== swipe) {
+          window.__openSwipe.style.transform = 'translateX(0)';
+        }
+      }, {passive:true});
+
+      swipe.addEventListener('touchmove', e => {
+        start.current = e.touches[0].clientX;
+        let dx = start.current - start.x;
+        if (dx < 0) {
+          dx = Math.max(dx, -88);
+          content.style.transform = `translateX(${dx}px)`;
+        }
+      }, {passive:true});
+
+      swipe.addEventListener('touchend', () => {
+        const dx = start.current - start.x;
+        if (dx < -44) {
+          content.style.transform = 'translateX(-88px)';
+          window.__openSwipe = swipe;
+          start.open = true;
+        } else {
+          content.style.transform = 'translateX(0)';
+          if (window.__openSwipe === swipe) window.__openSwipe = null;
+        }
+      });
+
+      swipe.addEventListener('click', () => {
+        if (start.open) {
+          content.style.transform = 'translateX(0)';
+          if (window.__openSwipe === swipe) window.__openSwipe = null;
+        }
+      });
+    });
+  }
+
+  function startInlineEdit(el, index) {
+    const meal = currentMeal();
+    const input = document.createElement('input');
+    input.className = 'input';
+    input.value = meal.products[index].grams;
+    input.inputMode = 'numeric';
+    input.style.width = '72px';
+    input.style.height = '34px';
+    input.style.padding = '0 10px';
+    input.style.borderRadius = '10px';
+    input.style.border = '1px solid #d1d1d6';
+
+    el.replaceWith(input);
+    input.focus();
+    input.select();
+
+    const saveEdit = () => {
+      const grams = Number(input.value);
+      if (grams > 0) {
+        const factor = grams / 100;
+        const item = meal.products[index];
+        item.grams = grams;
+        item.protein = round(item.proteinBase * factor);
+        item.fat = round(item.fatBase * factor);
+        item.carbs = round(item.carbsBase * factor);
+        item.calories = round(item.caloriesBase * factor);
+        save();
+      }
+      render();
+    };
+
+    input.addEventListener('blur', saveEdit);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') saveEdit();
+      if (e.key === 'Escape') render();
+    });
+  }
+
+  function deleteMealProduct(index) {
+    currentMeal().products.splice(index, 1);
+    save();
+    render();
+  }
+
+  function showProductPicker() {
+    const html = `
+      <div class="modal show" id="pickerModal" style="display:flex">
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="sheet-head">
+            <div class="sheet-title">Добавить продукт</div>
+            <button class="btn ghost small" onclick="closePicker()">Закрыть</button>
+          </div>
+          <div class="search-wrap field">
+            <input id="productSearch" class="input" placeholder="Поиск продукта..." oninput="filterProducts()" />
+            <button class="search-clear" onclick="clearSearch()">×</button>
+          </div>
+          <div class="kbd-line" style="margin-bottom:10px">
+            <span class="kbd">Последние</span>
+            <span class="kbd">Избранное</span>
+            <span class="kbd">Мясо</span>
+            <span class="kbd">Овощи</span>
+          </div>
+          <div class="product-select" id="productSelect"></div>
+        </div>
+      </div>
+    `;
+    const existing = document.getElementById('pickerModal');
+    if (existing) existing.remove();
+    document.body.insertAdjacentHTML('beforeend', html);
+    window.__productPickerForMeal = currentMeal().id;
+    renderProductOptions(state.products);
+    document.getElementById('productSearch').focus();
+  }
+
+  function closePicker() {
+    const modal = document.getElementById('pickerModal');
+    if (modal) modal.remove();
+  }
+
+  function clearSearch() {
+    const input = document.getElementById('productSearch');
+    if (input) {
+      input.value = '';
+      filterProducts();
+      input.focus();
+    }
+  }
+
+  function filterProducts() {
+    const q = (document.getElementById('productSearch').value || '').trim().toLowerCase();
+    const list = state.products.filter(p => p.name.toLowerCase().includes(q));
+    renderProductOptions(list);
+  }
+
+  function renderProductOptions(list) {
+    const c = document.getElementById('productSelect');
+    if (!c) return;
+    c.innerHTML = list.length ? list.map(p => `
+      <div class="product-option" onclick="addProductToCurrentMeal(${p.id})">
+        <b>${p.name}</b>
+        <div class="meta">Б ${p.protein} · Ж ${p.fat} · У ${p.carbs} · ${p.calories} ккал</div>
+      </div>
+    `).join('') : `<div class="empty">Ничего не найдено</div>`;
+  }
+
+  function addProductToCurrentMeal(productId) {
+  const p = state.products.find(x => x.id === productId);
+  if (!p) return;
+
+  const grams = 100;
+  const factor = grams / 100;
+
+  const item = {
+    productId: p.id,
+    name: p.name,
+    grams,
+    proteinBase: p.protein,
+    fatBase: p.fat,
+    carbsBase: p.carbs,
+    caloriesBase: p.calories,
+    protein: round(p.protein * factor),
+    fat: round(p.fat * factor),
+    carbs: round(p.carbs * factor),
+    calories: round(p.calories * factor)
+  };
+
+  // 👇 КЛЮЧЕВОЕ РАЗДЕЛЕНИЕ
+  if (window.__pickerMode === 'recipe') {
+    recipeIngredientDraft.push(item);
+    renderRecipeIngredients(recipeIngredientDraft);
+    updateRecipeTotals(recipeIngredientDraft);
+  } else {
+    const meal = currentMeal();
+    meal.products.push({ ...item, id: uid() });
+  }
+
+  save();
+  closePicker();
+  render();
+}
+
+  function recipeFromMeal(meal) {
+    const ingredients = meal.products.map(p => ({
+      productId: p.productId || null,
+      name: p.name,
+      grams: p.grams,
+      protein: p.protein,
+      fat: p.fat,
+      carbs: p.carbs,
+      calories: p.calories
+    }));
+    const totals = calcRecipeTotals(ingredients);
+    return {
+      id: uid(),
+      name: `${meal.name} — ${new Date().toLocaleDateString('ru-RU')}`,
+      category: 'Мои рецепты',
+      ingredients,
+      instructions: '',
+      totals,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  function openRecipeModalFromMeal() {
+    const meal = currentMeal();
+    if (!meal.products.length) {
+      toast('В этом приёме пока нет продуктов');
+      return;
+    }
+    editingRecipeId = null;
+    const recipe = recipeFromMeal(meal);
+    recipeIngredientDraft = recipe.ingredients.map(x => ({ ...x }));
+    openRecipeModal(recipe);
+  }
+
+  function openRecipeModal(recipe = null) {
+    document.getElementById('recipeModal').classList.add('show');
+    document.getElementById('recipeModalTitle').textContent = recipe ? 'Сохранить рецепт' : 'Новый рецепт';
+    document.getElementById('recipeName').value = recipe?.name || '';
+    document.getElementById('recipeCategory').value = recipe?.category || 'Мои рецепты';
+    document.getElementById('recipeInstructions').value = recipe?.instructions || '';
+    recipeIngredientDraft = recipe?.ingredients ? recipe.ingredients.map(x => ({ ...x })) : [];
+    renderRecipeIngredients(recipeIngredientDraft);
+    updateRecipeTotals(recipeIngredientDraft);
+  }
+
+  function closeRecipeModal() {
+    document.getElementById('recipeModal').classList.remove('show');
+  }
+
+  function fillFromCurrentMeal() {
+    const meal = currentMeal();
+    if (!meal.products.length) {
+      toast('Сначала добавь продукты в приём');
+      return;
+    }
+    const recipe = recipeFromMeal(meal);
+    document.getElementById('recipeName').value = recipe.name;
+    document.getElementById('recipeCategory').value = recipe.category;
+    document.getElementById('recipeInstructions').value = '';
+    recipeIngredientDraft = recipe.ingredients.map(x => ({ ...x }));
+    renderRecipeIngredients(recipeIngredientDraft);
+    updateRecipeTotals(recipeIngredientDraft);
+  }
+
+  function renderRecipeIngredients(items) {
+  const c = document.getElementById('recipeIngredients');
+  if (!c) return;
+
+  if (!items.length) {
+    c.innerHTML = `<div class="empty">Добавь ингредиенты</div>`;
+    return;
+  }
+
+  c.innerHTML = items.map((x, idx) => `
+    <div class="ingredient">
+      <div class="left">
+        <div class="name">${x.name}</div>
+        <div class="info">
+          <span class="recipe-grams" data-idx="${idx}" style="color:var(--blue);cursor:pointer;font-weight:700">
+            ${x.grams} г
+          </span>
+          · Б ${round(x.protein)} · Ж ${round(x.fat)} · У ${round(x.carbs)} · ${round(x.calories)}
+        </div>
+      </div>
+
+      <button class="btn ghost small" onclick="removeRecipeIngredient(${idx})">×</button>
+    </div>
+  `).join('');
+
+  // 👇 обработка клика по граммам
+  document.querySelectorAll('.recipe-grams').forEach(el => {
+    el.addEventListener('click', () => {
+      const index = Number(el.dataset.idx);
+      startRecipeInlineEdit(el, index);
+    });
+  });
+}
+
+function startRecipeInlineEdit(el, index) {
+  const item = recipeIngredientDraft[index];
+
+  const input = document.createElement('input');
+  input.className = 'input';
+  input.value = item.grams;
+  input.inputMode = 'numeric';
+
+  input.style.width = '70px';
+  input.style.height = '32px';
+  input.style.padding = '0 8px';
+  input.style.borderRadius = '10px';
+  input.style.border = '1px solid #d1d1d6';
+
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+
+  const saveEdit = () => {
+    const grams = Number(input.value);
+
+    if (grams > 0) {
+      const factor = grams / 100;
+
+      item.grams = grams;
+      item.protein = round(item.proteinBase * factor);
+      item.fat = round(item.fatBase * factor);
+      item.carbs = round(item.carbsBase * factor);
+      item.calories = round(item.caloriesBase * factor);
+    }
+
+    renderRecipeIngredients(recipeIngredientDraft);
+    updateRecipeTotals(recipeIngredientDraft);
+  };
+
+  input.addEventListener('blur', saveEdit);
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveEdit();
+    if (e.key === 'Escape') {
+      renderRecipeIngredients(recipeIngredientDraft);
+    }
+  });
+}
+
+  function removeRecipeIngredient(index) {
+    recipeIngredientDraft.splice(index, 1);
+    renderRecipeIngredients(recipeIngredientDraft);
+    updateRecipeTotals(recipeIngredientDraft);
+  }
+
+  function updateRecipeTotals(items) {
+    const totals = calcRecipeTotals(items);
+    const keto = ketoRatio(totals);
+    document.getElementById('recipeCal').textContent = round(totals.calories);
+    document.getElementById('recipeP').textContent = round(totals.protein);
+    document.getElementById('recipeF').textContent = round(totals.fat);
+    document.getElementById('recipeC').textContent = round(totals.carbs);
+    const chip = document.getElementById('recipeKetoChip');
+    chip.textContent = `Кето: ${keto.label}`;
+    chip.className = `chip ${keto.status}`;
+  }
+
+  function saveRecipe() {
+	if (!canCreateRecipe()) {
+  	showRecipeLimitPaywall();
+  	return;
+	}
+  
+    const name = document.getElementById('recipeName').value.trim();
+    if (!name) {
+      toast('Введите название рецепта');
+      return;
+    }
+    if (!recipeIngredientDraft.length) {
+      toast('Добавь хотя бы один ингредиент');
+      return;
+    }
+    const recipe = {
+      id: editingRecipeId || uid(),
+      name,
+      category: document.getElementById('recipeCategory').value.trim() || 'Мои рецепты',
+      instructions: document.getElementById('recipeInstructions').value.trim(),
+      ingredients: recipeIngredientDraft.map(x => ({ ...x })),
+      totals: calcRecipeTotals(recipeIngredientDraft),
+      createdAt: editingRecipeId ? (state.recipes.find(r => r.id === editingRecipeId)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    if (editingRecipeId) {
+      state.recipes = state.recipes.map(r => r.id === editingRecipeId ? recipe : r);
+      editingRecipeId = null;
+    } else {
+      state.recipes.unshift(recipe);
+    }
+    save();
+    closeRecipeModal();
+    render();
+    toast('Рецепт сохранён');
+  }
+
+function renderRecipes() {
+
+  setPageMeta(
+    'Рецепты',
+    'Сохраняй удачные приёмы, повторяй их в один тап и ускоряй сбор рациона.'
+  );
+
+  const q = (window.__recipeQuery || '').toLowerCase();
+
+  const filtered = state.recipes.filter(r =>
+    !q ||
+    r.name.toLowerCase().includes(q) ||
+    (r.category || '').toLowerCase().includes(q) ||
+    (r.ingredients || []).some(x => x.name.toLowerCase().includes(q))
+  );
+
+  const html = `
+    <div class="grid">
+      <div class="card">
+
+        ${isFree() && state.recipes.length >= 5 ? renderPaywallRecipes() : ''}
+
+        <!-- HEADER -->
+        <div class="row" style="margin-bottom:10px">
+
+          <!-- LEFT SIDE -->
+          <div>
+            <div class="section-title" style="margin:0">База рецептов</div>
+
+            <div class="mini">
+              Главный сценарий монетизации: сохрани приём, потом используй его снова.
+            </div>
+
+            <div class="mini">
+              Рецепты: ${state.recipes.length} / ${isPro() ? '∞' : 5}
+            </div>
+          </div>
+
+          <!-- RIGHT SIDE -->
+          <div>
+            ${isPro() || state.recipes.length < 5 ? `
+              <button class="btn primary" onclick="openRecipeModal()">+ Новый рецепт</button>
+            ` : `
+              <button class="btn primary" onclick="showRecipeLimitPaywall()">+ Новый рецепт</button>
+            `}
+          </div>
+
+        </div>
+
+        <!-- SEARCH -->
+        <div class="search-wrap" style="margin-bottom:12px">
+          <input
+            class="input"
+            id="recipeSearch"
+            placeholder="Поиск рецепта или ингредиента..."
+            oninput="searchRecipes(this.value)"
+          />
+          <button class="search-clear" onclick="clearRecipeSearch()">×</button>
+        </div>
+
+        <!-- TABS -->
+        <div class="toolbar" style="margin-bottom:12px">
+          <span class="chip">Все</span>
+          <span class="chip">Избранное</span>
+          <span class="chip">Мои рецепты</span>
+        </div>
+
+        <!-- LIST -->
+        <div class="recipe-list">
+          ${filtered.length ? filtered.map(recipe => {
+
+            const t = recipe.totals || calcRecipeTotals(recipe.ingredients || []);
+            const k = ketoRatio(t);
+
+            return `
+              <div class="recipe-card">
+
+                <div class="recipe-head">
+                  <div>
+                    <div class="recipe-name">${recipe.name}</div>
+                    <div class="recipe-meta">
+                      ${recipe.category || 'Мои рецепты'} · ${recipe.ingredients.length} ингредиентов
+                    </div>
+                  </div>
+                  <div class="recipe-tag">${k.label}</div>
+                </div>
+
+                <div class="recipe-kbzu">
+                  <div class="kbzu"><div class="val">${round(t.calories)}</div><div class="lbl">Ккал</div></div>
+                  <div class="kbzu"><div class="val">${round(t.protein)}</div><div class="lbl">Белки</div></div>
+                  <div class="kbzu"><div class="val">${round(t.fat)}</div><div class="lbl">Жиры</div></div>
+                  <div class="kbzu"><div class="val">${round(t.carbs)}</div><div class="lbl">Углеводы</div></div>
+                </div>
+
+                <div>
+                  <div class="mini" style="margin-bottom:6px">Ингредиенты</div>
+                  <div class="recipe-products">
+                    ${(recipe.ingredients || []).slice(0, 5).map(i =>
+                      `<span class="kbd">${i.name} · ${i.grams} г</span>`
+                    ).join('')}
+
+                    ${(recipe.ingredients || []).length > 5
+                      ? `<span class="kbd">+ ещё ${(recipe.ingredients || []).length - 5}</span>`
+                      : ''
+                    }
+                  </div>
+                </div>
+
+                <div class="recipe-actions">
+                  <button class="btn primary small" onclick="useRecipe(${recipe.id})">Повторить в приём</button>
+                  <button class="btn secondary small" onclick="editRecipe(${recipe.id})">Редактировать</button>
+                  <button class="btn ghost small" onclick="duplicateRecipe(${recipe.id})">Дублировать</button>
+                  <button class="btn danger small" onclick="deleteRecipe(${recipe.id})">Удалить</button>
+                </div>
+
+              </div>
+            `;
+          }).join('') : `
+            <div class="empty">
+              Рецептов пока нет.<br><br>
+              Сохрани любой удачный приём пищи как рецепт — и потом повторяй его в один тап.
+            </div>
+          `}
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.getElementById('view').innerHTML = html;
+
+  const input = document.getElementById('recipeSearch');
+  if (input) input.value = window.__recipeQuery || '';
+}
+
+  function searchRecipes(v) {
+    window.__recipeQuery = v || '';
+    renderRecipes();
+  }
+
+  function clearRecipeSearch() {
+    window.__recipeQuery = '';
+    renderRecipes();
+  }
+
+  function useRecipe(recipeId) {
+    const recipe = state.recipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+    state.meals[currentMealIndex].products.push(...recipe.ingredients.map(i => {
+      const base = state.products.find(p => p.id === i.productId) || null;
+      const grams = Number(i.grams) || 100;
+      const factor = grams / 100;
+      const source = base ? {
+        name: base.name,
+        proteinBase: base.protein,
+        fatBase: base.fat,
+        carbsBase: base.carbs,
+        caloriesBase: base.calories
+      } : {
+        name: i.name,
+        proteinBase: i.protein / factor || i.protein,
+        fatBase: i.fat / factor || i.fat,
+        carbsBase: i.carbs / factor || i.carbs,
+        caloriesBase: i.calories / factor || i.calories
+      };
+      return {
+        id: uid(),
+        productId: i.productId || null,
+        name: i.name,
+        grams,
+        proteinBase: source.proteinBase,
+        fatBase: source.fatBase,
+        carbsBase: source.carbsBase,
+        caloriesBase: source.caloriesBase,
+        protein: round(source.proteinBase * factor),
+        fat: round(source.fatBase * factor),
+        carbs: round(source.carbsBase * factor),
+        calories: round(source.caloriesBase * factor)
+      };
+    }));
+    save();
+    setScreen('meals');
+    toast(`Рецепт добавлен в ${currentMeal().name}`);
+  }
+
+  function editRecipe(recipeId) {
+    const recipe = state.recipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+    editingRecipeId = recipeId;
+    recipeIngredientDraft = (recipe.ingredients || []).map(x => ({ ...x }));
+    openRecipeModal(recipe);
+  }
+
+  function duplicateRecipe(recipeId) {
+	if (!canCreateRecipe()) {
+  	showRecipeLimitPaywall();
+  	return;
+	}
+    const recipe = state.recipes.find(r => r.id === recipeId);
+    if (!recipe) return;
+    const copy = {
+      ...recipe,
+      id: uid(),
+      name: `${recipe.name} (копия)`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      ingredients: (recipe.ingredients || []).map(x => ({ ...x }))
+    };
+    state.recipes.unshift(copy);
+    save();
+    renderRecipes();
+    toast('Рецепт дублирован');
+  }
+
+  function deleteRecipe(recipeId) {
+    openConfirm({
+  title: 'Удалить рецепт?',
+  text: 'Это действие нельзя отменить',
+  confirmText: 'Удалить',
+  isDanger: true,
+  onConfirm: () => {
+    state.recipes = state.recipes.filter(r => r.id !== recipeId);
+    save();
+    renderRecipes();
+    toast('Рецепт удалён');
+  }
+});
+  }
+
+  // initial wiring
+  window.setScreen = setScreen;
+  window.openMeal = openMeal;
+  window.showProductPicker = showProductPicker;
+  window.closePicker = closePicker;
+  window.filterProducts = filterProducts;
+  window.clearSearch = clearSearch;
+  window.addProductToCurrentMeal = addProductToCurrentMeal;
+  window.deleteMealProduct = deleteMealProduct;
+  window.openRecipeModal = openRecipeModal;
+  window.openRecipeModalFromMeal = openRecipeModalFromMeal;
+  window.closeRecipeModal = closeRecipeModal;
+  window.fillFromCurrentMeal = fillFromCurrentMeal;
+  window.saveRecipe = saveRecipe;
+  window.searchRecipes = searchRecipes;
+  window.clearRecipeSearch = clearRecipeSearch;
+  window.useRecipe = useRecipe;
+  window.editRecipe = editRecipe;
+  window.duplicateRecipe = duplicateRecipe;
+  window.deleteRecipe = deleteRecipe;
+  window.removeRecipeIngredient = removeRecipeIngredient;
+  window.startInlineEdit = startInlineEdit;
+
+  render();
+
+function renderSettings() {
+  const s = state.settings;
+
+  setPageMeta('Настройки', 'Управление дневными целями');
+
+  const html = `
+    <div class="grid">
+      <div class="card">
+${!isPro() ? `
+  <div style="
+    background:linear-gradient(135deg,#007aff,#34c759);
+    color:#fff;
+    padding:16px;
+    border-radius:16px;
+    margin-bottom:12px;
+  ">
+    <div style="font-size:14px;opacity:.9">PRO доступ</div>
+    
+    <div style="font-size:22px;font-weight:700;margin:6px 0">
+      299 ₽ / месяц
+    </div>
+
+    <div style="font-size:13px;opacity:.9;margin-bottom:10px">
+      История дней, аналитика и неограниченные рецепты
+    </div>
+
+    <button class="btn" style="background:#fff;color:#007aff;width:100%"
+      onclick="buyPro()">
+      Попробовать PRO
+    </button>
+  </div>
+` : ''}
+        <div class="section-title">Дневные цели</div>
+
+        <div class="field">
+          <div class="label">Калории</div>
+          <input id="setCalories" class="input" type="number" value="${s.calories}">
+        </div>
+
+        <div class="field">
+          <div class="label">Белки</div>
+          <input id="setProtein" class="input" type="number" value="${s.protein}">
+        </div>
+
+        <div class="field">
+          <div class="label">Жиры</div>
+          <input id="setFat" class="input" type="number" value="${s.fat}">
+        </div>
+
+        <div class="field">
+          <div class="label">Углеводы</div>
+          <input id="setCarbs" class="input" type="number" value="${s.carbs}">
+        </div>
+
+	<div class="field">
+  		<div class="label">Количество приёмов пищи</div>
+  		<input id="setMealsCount" class="input" type="number" value="${s.mealsCount}">
+	</div>
+
+	<div class="field">
+  		<div class="label">Кето-цель (соотношение жиры / (белки+углеводы))</div>
+  		<input id="setKetoGoal" class="input" type="number" step="0.1" value="${s.ketoGoal}">
+	</div>
+
+        <div class="toolbar">
+          <button class="btn primary" onclick="saveSettings()">Сохранить</button>
+          <button class="btn secondary" onclick="setScreen('day')">Назад</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('view').innerHTML = html;
+}
+
+function saveSettings() {
+  const calories = Number(document.getElementById('setCalories').value);
+  const protein = Number(document.getElementById('setProtein').value);
+  const fat = Number(document.getElementById('setFat').value);
+  const carbs = Number(document.getElementById('setCarbs').value);
+  const mealsCount = Number(document.getElementById('setMealsCount').value);
+  const ketoGoal = Number(document.getElementById('setKetoGoal').value);
+
+  state.settings.calories = calories;
+  state.settings.protein = protein;
+  state.settings.fat = fat;
+  state.settings.carbs = carbs;
+  state.settings.mealsCount = mealsCount;
+  state.settings.ketoGoal = ketoGoal;
+
+  // 🔥 ВАЖНО: пересоздаём приёмы пищи
+  rebuildMeals(mealsCount);
+
+  save();
+  toast('Настройки сохранены');
+
+  setScreen('day');
+}
+
+function rebuildMeals(count) {
+  if (!count || count < 1) return;
+
+  const totalCalories = state.settings.calories;
+  const share = 1 / count;
+
+  state.meals = Array.from({ length: count }).map((_, i) => {
+    return createMeal(
+      `Приём ${i + 1}`,
+      totalCalories / count, // ← вот это главное
+      share
+    );
+  });
+
+  currentMealIndex = 0;
+}
+
+  function applyDayTemplate() {
+	if (isFree()) {
+  	openPaywall('days');
+  	return;
+	}
+  if (!state.dayTemplates.length) {
+    toast('Нет сохранённых дней');
+    return;
+  }
+
+  // 👇 ВОТ ЗДЕСЬ ПОДТВЕРЖДЕНИЕ
+  openConfirm({
+  title: 'Заменить день?',
+  text: 'Текущий рацион будет полностью удалён',
+  onConfirm: () => {
+    const template = state.dayTemplates[0];
+
+    state.meals = template.meals.map((m, i) => ({
+      id: uid(),
+      name: m.name,
+      share: 1 / template.meals.length,
+      products: m.products.map(p => ({
+        ...p,
+        proteinBase: p.proteinBase || p.protein,
+        fatBase: p.fatBase || p.fat,
+        carbsBase: p.carbsBase || p.carbs,
+        caloriesBase: p.caloriesBase || p.calories
+      }))
+    }));
+
+    currentMealIndex = 0;
+
+    save();
+    render();
+    toast('День восстановлен');
+  }
+});
+
+  const template = state.dayTemplates[0];
+
+  state.meals = template.meals.map((m, i) => ({
+    id: uid(),
+    name: m.name,
+    share: 1 / template.meals.length,
+    products: m.products.map(p => ({
+      ...p,
+      proteinBase: p.proteinBase || p.protein,
+      fatBase: p.fatBase || p.fat,
+      carbsBase: p.carbsBase || p.carbs,
+      caloriesBase: p.caloriesBase || p.calories
+    }))
+  }));
+
+  currentMealIndex = 0;
+
+  save();
+  render();
+  toast('День восстановлен');
+}
+
+let confirmCallback = null;
+
+function openConfirm({
+  title = 'Вы уверены?',
+  text = '',
+  confirmText = 'ОК',
+  isDanger = false,
+  onConfirm
+}) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmText').textContent = text;
+
+  const btn = document.getElementById('confirmYes');
+  btn.textContent = confirmText;
+  btn.className = 'confirm-btn ' + (isDanger ? 'danger' : '');
+
+  confirmCallback = onConfirm;
+
+  const modal = document.getElementById('confirmModal');
+  modal.classList.add('show');
+
+  enableSwipeToClose();
+}
+
+function closeConfirm() {
+  const modal = document.getElementById('confirmModal');
+  modal.classList.remove('show');
+  confirmCallback = null;
+}
+
+document.getElementById('confirmYes').onclick = () => {
+  if (confirmCallback) confirmCallback();
+  closeConfirm();
+};
+
+function enableSwipeToClose() {
+  const sheet = document.getElementById('confirmSheet');
+  const grab = document.getElementById('confirmGrab');
+
+  let startY = 0;
+  let currentY = 0;
+  let isDragging = false;
+
+  const start = (y) => {
+    startY = y;
+    isDragging = true;
+    sheet.style.transition = 'none';
+  };
+
+  const move = (y) => {
+    if (!isDragging) return;
+    currentY = y;
+    let dy = currentY - startY;
+
+    if (dy > 0) {
+      sheet.style.transform = `translateY(${dy}px)`;
+    }
+  };
+
+  const end = () => {
+    if (!isDragging) return;
+
+    let dy = currentY - startY;
+
+    sheet.style.transition = 'transform .3s ease';
+
+    if (dy > 120) {
+      closeConfirm();
+    } else {
+      sheet.style.transform = 'translateY(0)';
+    }
+
+    isDragging = false;
+  };
+
+  grab.ontouchstart = (e) => start(e.touches[0].clientY);
+  grab.ontouchmove = (e) => move(e.touches[0].clientY);
+  grab.ontouchend = end;
+
+  // desktop fallback
+  grab.onmousedown = (e) => start(e.clientY);
+  window.onmousemove = (e) => move(e.clientY);
+  window.onmouseup = end;
+}
+
+function openAddProductModal() {
+  // ❗ удаляем старую если есть
+  const old = document.getElementById('addProductModal');
+  if (old) old.remove();
+
+  const html = `
+    <div class="modal show" id="addProductModal" style="display:flex">
+      <div class="sheet">
+        <div class="grab"></div>
+
+        <div class="sheet-head">
+          <div class="sheet-title">Новый продукт</div>
+          <button class="btn ghost small" onclick="closeAddProductModal()">Закрыть</button>
+        </div>
+
+        <div class="field">
+          <div class="label">Название</div>
+          <input id="newProductName" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">Белки</div>
+          <input id="newProductP" type="number" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">Жиры</div>
+          <input id="newProductF" type="number" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">Углеводы</div>
+          <input id="newProductC" type="number" class="input">
+        </div>
+
+        <div class="field">
+          <div class="label">Калории</div>
+          <input id="newProductKcal" type="number" class="input">
+        </div>
+
+        <button class="btn primary" onclick="saveNewProduct()">Сохранить</button>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeAddProductModal() {
+  const modal = document.getElementById('addProductModal');
+  if (modal) modal.remove();
+}
+
+function saveNewProduct() {
+  const name = document.getElementById('newProductName').value.trim();
+  const protein = Number(document.getElementById('newProductP').value) || 0;
+  const fat = Number(document.getElementById('newProductF').value) || 0;
+  const carbs = Number(document.getElementById('newProductC').value) || 0;
+  const calories = Number(document.getElementById('newProductKcal').value) || 0;
+
+  if (!name) {
+    toast('Введите название');
+    return;
+  }
+
+  // 1. создаём продукт (база)
+  const product = {
+    id: uid(),
+    name,
+    protein,
+    fat,
+    carbs,
+    calories
+  };
+
+  state.products.push(product);
+
+  // 2. сразу добавляем в текущий приём
+  const meal = currentMeal();
+
+  const grams = 100; // старт
+  const factor = grams / 100;
+
+  meal.products.push({
+    id: uid(),
+    productId: product.id,
+    name: product.name,
+    grams,
+    proteinBase: product.protein,
+    fatBase: product.fat,
+    carbsBase: product.carbs,
+    caloriesBase: product.calories,
+    protein: round(product.protein * factor),
+    fat: round(product.fat * factor),
+    carbs: round(product.carbs * factor),
+    calories: round(product.calories * factor)
+  });
+
+  save();
+
+  closeAddProductModal();
+
+  toast(`Добавлено: ${product.name}`);
+
+  // 🔥 ОБНОВЛЯЕМ UI
+  if (screen === 'meals') renderMeals();
+  if (screen === 'recipes') renderRecipes();
+
+setTimeout(() => {
+  document.getElementById('newProductName')?.focus();
+}, 100);
+}
+
+function showProductPickerForRecipe() {
+  showProductPicker();
+  window.__pickerMode = 'recipe';
+}
+
+function editRecipeGrams(index) {
+  const item = recipeIngredientDraft[index];
+
+  const grams = prompt('Введите граммы', item.grams);
+
+  if (!grams || isNaN(grams)) return;
+
+  const g = Number(grams);
+  const factor = g / 100;
+
+  item.grams = g;
+  item.protein = round(item.proteinBase * factor);
+  item.fat = round(item.fatBase * factor);
+  item.carbs = round(item.carbsBase * factor);
+  item.calories = round(item.caloriesBase * factor);
+
+  renderRecipeIngredients(recipeIngredientDraft);
+  updateRecipeTotals(recipeIngredientDraft);
+}
+
+function isFree() {
+  return !state.plan || state.plan === 'free';
+}
+
+function canCreateRecipe() {
+  if (isPro()) return true;
+  return state.recipes.length < 5;
+}
+
+function showRecipeLimitPaywall() {
+  openConfirm({
+    title: 'Лимит рецептов в FREE',
+    text: 'В бесплатной версии можно создать до 5 рецептов. Перейди на PRO без ограничений.',
+    confirmText: 'Открыть PRO',
+    isDanger: false,
+    onConfirm: buyPro
+  });
+}
+
+function checkRecipeLimit() {
+  if (!isFree()) return true;
+
+  if (state.recipes.length >= 5) {
+    openPaywall('recipes');
+    return false;
+  }
+
+  return true;
+}
+
+function checkDayTemplateLimit() {
+  if (!isFree()) return true;
+
+  if (state.dayTemplates.length >= 1) {
+    openPaywall('days');
+    return false;
+  }
+
+  return true;
+}
+
+function isPro() {
+  return state.plan === 'pro';
+}
+
+function openPaywall(type) {
+  const modal = document.getElementById('paywallModal');
+
+  let text = 'Убери ограничения';
+
+  if (type === 'recipes') {
+    text = 'Ты достиг лимита рецептов';
+  }
+
+  if (type === 'days') {
+    text = 'Сохранение дней доступно в PRO';
+  }
+
+  modal.querySelector('div[style*="color:#666"]').textContent = text;
+
+  modal.classList.add('show');
+}
+
+function closePaywall() {
+  document.getElementById('paywallModal').classList.remove('show');
+}
+
+// временно просто активируем PRO (потом заменишь на оплату)
+function activatePro() {
+  state.plan = 'pro';
+  save();
+  closePaywall();
+  toast('PRO активирован 🚀');
+}
+
+function buyPro() {
+  state.plan = 'pro';
+  save();
+  render();
+  toast('PRO активирован (тест)');
+}
+
+function saveDayTemplate() {
+  if (!checkDayTemplateLimit()) return;
+
+  const template = {
+    id: uid(),
+    name: 'Мой день',
+    meals: state.meals.map(m => ({
+      name: m.name,
+      share: m.share,
+      products: m.products.map(p => ({ ...p }))
+    })),
+    createdAt: new Date().toISOString()
+  };
+
+  state.dayTemplates.unshift(template);
+
+  save();
+  toast('День сохранён');
+}
+
+function applyDayTemplate() {
+  // 🔒 ограничение FREE
+  if (isFree()) {
+  openPaywall('days');
+  return;
+}
+
+  if (!state.dayTemplates.length) {
+    toast('Нет сохранённых дней');
+    return;
+  }
+
+  openConfirm({
+  title: 'Заменить день?',
+  text: 'Текущий рацион будет удалён',
+  confirmText: 'Заменить',
+  isDanger: true,
+  onConfirm: () => {
+    applyTemplateConfirmed();
+  }
+});
+
+  const template = state.dayTemplates[0];
+
+  state.meals = template.meals.map((m, i) => ({
+    id: uid(),
+    name: m.name,
+    share: 1 / template.meals.length,
+    products: m.products.map(p => ({
+      ...p,
+      proteinBase: p.proteinBase || p.protein,
+      fatBase: p.fatBase || p.fat,
+      carbsBase: p.carbsBase || p.carbs,
+      caloriesBase: p.caloriesBase || p.calories
+    }))
+  }));
+
+  currentMealIndex = 0;
+
+  save();
+  render();
+  toast('День применён');
+}
+
+function openDayTemplates() {
+  screen = 'dayTemplates';
+
+  document.querySelectorAll('.bottom-nav button')
+    .forEach(b => b.classList.remove('active'));
+
+  render();
+}
+
+function closeTemplates() {
+  document.querySelectorAll('.modal').forEach(m => m.remove());
+}
+
+function applyDayTemplateByIndex(index) {
+  const template = state.dayTemplates[index];
+  if (!template) return;
+
+  openConfirm({
+    title: 'Заменить текущий день?',
+    text: 'Текущий рацион будет перезаписан',
+    confirmText: 'Применить',
+    onConfirm: () => {
+
+      state.meals = template.meals.map(m => ({
+        id: uid(),
+        name: m.name,
+        share: m.share,
+        products: m.products.map(p => ({ ...p }))
+      }));
+
+      currentMealIndex = 0;
+
+      save();
+      setScreen('day');
+
+      toast('День применён');
+    }
+  });
+}
+
+function renderDayTemplates() {
+  setPageMeta('Шаблоны дней', 'Повторяй рацион в 1 тап');
+
+  const html = `
+    <div class="grid">
+
+      <div class="card">
+        <div class="row" style="margin-bottom:12px">
+          <div>
+            <div class="section-title" style="margin:0">Мои шаблоны</div>
+            <div class="mini">Сохранил → повторил → не думаешь</div>
+          </div>
+        </div>
+
+        <div class="recipe-list">
+          ${state.dayTemplates.length ? state.dayTemplates.map((day, i) => {
+
+            const totals = day.meals.reduce((acc, m) => {
+              const t = calcMealTotals(m);
+              acc.calories += t.calories;
+              acc.protein += t.protein;
+              acc.fat += t.fat;
+              acc.carbs += t.carbs;
+              return acc;
+            }, { calories:0, protein:0, fat:0, carbs:0 });
+
+            const keto = ketoRatio(totals);
+
+            // 🔥 превью продуктов
+            const preview = day.meals.flatMap(m => m.products)
+              .slice(0, 4)
+              .map(p => `<span class="kbd">${p.name}</span>`)
+              .join('');
+
+            return `
+              <div class="recipe-card">
+
+                <div class="recipe-head">
+                  <div>
+                    <div class="recipe-name" onclick="editDayName(${i})">
+                      ${day.name || 'Без названия'}
+                    </div>
+
+                    <div class="recipe-meta">
+                      ${day.meals.length} приёма · ${round(totals.calories)} ккал
+                    </div>
+                  </div>
+
+                  <div class="chip ${keto.status}">
+                    ${keto.label}
+                  </div>
+                </div>
+
+                <div class="recipe-products">
+                  ${preview || '<span class="mini">Нет продуктов</span>'}
+                </div>
+
+                <div class="recipe-actions">
+
+                  <button class="btn primary small" onclick="applyDayTemplateByIndex(${i})">
+                    ⚡ Применить
+                  </button>
+
+                  <button class="btn secondary small" onclick="duplicateDayTemplate(${i})">
+                    Дублировать
+                  </button>
+
+                  <button class="btn danger small" onclick="deleteDayTemplate(${i})">
+                    Удалить
+                  </button>
+
+                </div>
+
+              </div>
+            `;
+          }).join('') : `
+            <div class="empty">
+              Пока нет шаблонов<br><br>
+              Сохрани день на главном экране
+            </div>
+          `}
+        </div>
+
+        <div style="margin-top:12px">
+          <button class="btn secondary" onclick="setScreen('day')">
+            ← Назад
+          </button>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.getElementById('view').innerHTML = html;
+}
+
+function editDayName(index) {
+  const name = prompt('Название дня:', state.dayTemplates[index].name || '');
+
+  if (name !== null) {
+    state.dayTemplates[index].name = name.trim() || 'Без названия';
+    save();
+    renderDayTemplates();
+  }
+}
+
+function duplicateDayTemplate(index) {
+  const day = state.dayTemplates[index];
+  if (!day) return;
+
+  const copy = {
+    ...day,
+    id: uid(),
+    name: (day.name || 'День') + ' (копия)',
+    meals: day.meals.map(m => ({
+      ...m,
+      products: m.products.map(p => ({ ...p }))
+    }))
+  };
+
+  state.dayTemplates.unshift(copy);
+
+  save();
+  renderDayTemplates();
+  toast('Скопировано');
+}
+
+function deleteDayTemplate(index) {
+  openConfirm({
+    title: 'Удалить день?',
+    text: 'Это действие нельзя отменить',
+    confirmText: 'Удалить',
+    isDanger: true,
+    onConfirm: () => {
+      state.dayTemplates.splice(index, 1);
+      save();
+      renderDayTemplates();
+      toast('Удалено');
+    }
+  });
+}
+
+function renderPaywallRecipes() {
+  return `
+    <div class="card paywall-card" onclick="openPaywall('recipes')">
+      
+      <div class="paywall-icon">🔒</div>
+
+      <div class="paywall-title">
+        Лимит рецептов достигнут
+      </div>
+
+      <div class="paywall-text">
+        Вы уже сохранили 5 рецептов.<br>
+        Перейдите на PRO, чтобы сохранять без ограничений и ускорить работу с рационом.
+      </div>
+
+      <div class="paywall-benefits">
+        <div>• Безлимитные рецепты</div>
+        <div>• Быстрое повторение приёмов</div>
+        <div>• Удобная база питания</div>
+      </div>
+
+      <button class="paywall-btn" onclick="event.stopPropagation(); openPaywall('recipes')">
+        Открыть PRO
+      </button>
+
+    </div>
+  `;
+}
+
+</script>
+
+<div class="modal" id="addProductModal">
+  <div class="sheet">
+    <div class="grab"></div>
+
+    <div class="sheet-head">
+      <div class="sheet-title">Новый продукт</div>
+      <button class="btn ghost small" onclick="closeAddProductModal()">Закрыть</button>
+    </div>
+
+    <div class="field">
+      <div class="label">Название</div>
+      <input id="newProductName" class="input" placeholder="Например: Авокадо">
+    </div>
+
+    <div class="field">
+      <div class="label">Белки (на 100г)</div>
+      <input id="newProductProtein" class="input" type="number">
+    </div>
+
+    <div class="field">
+      <div class="label">Жиры (на 100г)</div>
+      <input id="newProductFat" class="input" type="number">
+    </div>
+
+    <div class="field">
+      <div class="label">Углеводы (на 100г)</div>
+      <input id="newProductCarbs" class="input" type="number">
+    </div>
+
+    <div class="field">
+      <div class="label">Калории</div>
+      <input id="newProductCalories" class="input" type="number">
+    </div>
+
+    <div class="toolbar">
+      <button class="btn primary" onclick="saveNewProduct()">Сохранить</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="paywallModal">
+  <div class="sheet">
+    <div class="grab"></div>
+
+    <div style="text-align:center;padding:10px 0 20px">
+
+      <div style="font-size:24px;font-weight:700;margin-bottom:6px">
+        PRO доступ
+      </div>
+
+      <div style="font-size:14px;color:#666;margin-bottom:16px">
+        Убери ограничения и ускорь планирование
+      </div>
+
+      <div style="text-align:left;margin-bottom:16px">
+        <div>✅ Неограниченные рецепты</div>
+        <div>✅ Сохранение дней</div>
+        <div>✅ История питания</div>
+        <div>✅ Аналитика</div>
+      </div>
+
+      <div style="font-size:22px;font-weight:700;margin-bottom:12px">
+        299 ₽ / месяц
+      </div>
+
+      <button class="btn primary" style="width:100%;margin-bottom:8px"
+        onclick="buyPro()">
+        Получить PRO
+      </button>
+
+      <button class="btn ghost" style="width:100%"
+        onclick="closePaywall()">
+        Позже
+      </button>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

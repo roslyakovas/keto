@@ -1,0 +1,28 @@
+{
+  "short_name": "Кето План",
+  "name": "Кето Планировщик Питания",
+  "description": "Калькулятор и планировщик кето-диеты",
+  "icons": [
+  {
+    "src": "icon.png",
+    "sizes": "512x512",
+    "type": "image/png",
+    "purpose": "any maskable"
+  },
+  {
+    "src": "icon-192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  },
+  {
+    "src": "icon-180.png",
+    "sizes": "180x180",
+    "type": "image/png"
+  }
+],
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981"
+}
